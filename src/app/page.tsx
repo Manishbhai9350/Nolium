@@ -1,16 +1,20 @@
-import prisma from "@/lib/db";
 
-export default async function Home() {
+import { getQueryClient, trpc } from "@/trpc/server";
+import Client from "./client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-  const users = await prisma.user.findMany()
+export default function Home() {
+
+  const queryClient = getQueryClient()
+  void queryClient.prefetchQuery(trpc.getUsers.queryOptions())
 
   return (
-    <main>
+    <main className="bg-zinc-800 text-white h-screen">
       <h1>Cheetah Hi Kehde</h1>
       <p>Users</p>
-      {
-        JSON.stringify(users)
-      }
+      <HydrationBoundary state={dehydrate(queryClient)} >
+        <Client />
+      </HydrationBoundary>
     </main>
   );
 }

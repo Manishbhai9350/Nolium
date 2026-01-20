@@ -7,7 +7,7 @@ const page = async () => {
   
 
   return (
-    <main className='w-full h-screen'>
+    <main className='w-full h-fit'>
      <LoginForm />
     </main>
   )

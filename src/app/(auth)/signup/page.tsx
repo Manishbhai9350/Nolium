@@ -1,17 +1,14 @@
-import SignupForm from '@/features/auth/signup-form'
-import { requireUnAuth } from '@/lib/auth-utils'
-import React from 'react'
+import SignupForm from "@/features/auth/signup-form";
+import { requireUnAuth } from "@/lib/auth-utils";
 
 const page = async () => {
-
-  await requireUnAuth()
-  
+  await requireUnAuth();
 
   return (
-    <main className='w-full h-screen'>
+    <main className="w-full h-fit">
       <SignupForm />
-   </main>
-  )
-}
+    </main>
+  );
+};
 
-export default page
+export default page;

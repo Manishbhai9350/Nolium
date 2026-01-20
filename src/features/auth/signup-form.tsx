@@ -24,6 +24,7 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 const SignupSchema = z
   .object({
@@ -79,7 +80,7 @@ const SignupForm = () => {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle>Welcome back to Nolium</CardTitle>
+        <CardTitle className="text-2xl">Welcome back</CardTitle>
         <CardDescription>Login to continue</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -176,15 +177,17 @@ const SignupForm = () => {
         <Button
           disabled={isPending}
           variant="outline"
-          className="cursor-pointer"
+          className="cursor-pointer flex relative"
         >
+          <Image width={20} height={20} src="/logos/google.svg" alt="Google" />
           Continue with Google
         </Button>
         <Button
           disabled={isPending}
           variant="outline"
-          className="cursor-pointer"
+          className="cursor-pointer flex relative"
         >
+          <Image width={20} height={20} src="/logos/github.svg" alt="Google" />
           Continue with Github
         </Button>
       </CardContent>

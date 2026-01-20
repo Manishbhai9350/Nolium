@@ -80,7 +80,7 @@ const SignupForm = () => {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Create an accoung</CardTitle>
+        <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>Sign up to get started</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

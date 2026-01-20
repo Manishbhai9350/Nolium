@@ -23,21 +23,26 @@ export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
-  const session = await auth.api.getSession({
-    headers: await headers()
-  });
-
-  if (!session) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "Unauthorized",
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers()
     });
+  
+    if (!session) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Unauthorized",
+      });
+    }
+  
+    return next({
+      ctx: {
+        ...ctx,
+        auth: session,
+      },
+    });
+  } catch (error) {
+    console.error("Session fetch failed: ",error)
+    return null;
   }
-
-  return next({
-    ctx: {
-      ...ctx,
-      auth: session,
-    },
-  });
 });

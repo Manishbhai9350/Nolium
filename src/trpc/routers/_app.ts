@@ -1,6 +1,9 @@
-import { createTRPCRouter, protectedProcedure } from "../init";
+import { createTRPCRouter, protectedProcedure, baseProcedure } from "../init";
 import prisma from "@/lib/db";
 export const appRouter = createTRPCRouter({
+  neonStart: baseProcedure.query( async () => {
+    return await prisma.user.findMany();
+  }),
   getMeows: protectedProcedure.query(({ ctx }) => {
     return prisma.user.findMany();
   }),

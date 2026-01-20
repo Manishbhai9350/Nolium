@@ -3,25 +3,35 @@ import { auth } from "./auth";
 import { redirect } from "next/navigation";
 
 export const requireAuth = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-  if (!session) {
-    redirect("/login");
+    if (!session) {
+      redirect("/login");
+    }
+
+    return session;
+  } catch (error) {
+    console.error("Session fetch failed: ", error);
+    return null;
   }
-
-  return session;
 };
 
 export const requireUnAuth = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-  if (session) {
-    redirect("/workflow");
+    if (session) {
+      redirect("/workflow");
+    }
+
+    return session;
+  } catch (error) {
+    console.error("Session fetch failed: ", error);
+    return null;
   }
-
-  return session;
 };

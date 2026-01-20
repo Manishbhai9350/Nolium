@@ -141,7 +141,7 @@ const LoginForm = () => {
           variant="outline"
           className="cursor-pointer flex relative"
         >
-        <Image width={20} height={20} src='/logos/github.svg' alt="Google" />
+        <Image width={20} height={20} src='/logos/github.svg' alt="Github" />
           Continue with Github
         </Button>
       </CardContent>

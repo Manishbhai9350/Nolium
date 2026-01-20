@@ -80,8 +80,8 @@ const SignupForm = () => {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>Login to continue</CardDescription>
+        <CardTitle className="text-2xl">Create an accoung</CardTitle>
+        <CardDescription>Sign up to get started</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <Form {...form}>
@@ -187,7 +187,7 @@ const SignupForm = () => {
           variant="outline"
           className="cursor-pointer flex relative"
         >
-          <Image width={20} height={20} src="/logos/github.svg" alt="Google" />
+          <Image width={20} height={20} src="/logos/github.svg" alt="Github" />
           Continue with Github
         </Button>
       </CardContent>

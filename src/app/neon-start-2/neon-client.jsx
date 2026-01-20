@@ -1,29 +1,26 @@
-'use client';
+"use client";
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const NeonClient = () => {
+  const router = useRouter();
 
-    const router = useRouter()
+  useEffect(() => {
+    const timerId = setTimeout(
+      () => {
+        console.log("Meow");
+        router.push("/neon-start-2");
+      },
+      1000 * 60 * 2,
+    );
 
-    useEffect(() => {
-      
-        setTimeout(() => {
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, []);
 
-            console.log('Meow')
-            router.push('/neon-start-1')
-            
-        }, 1000 * 60 * 2);
-    
-      return () => {
-        
-      }
-    }, [])
-    
-  return (
-    <div>NeonClient</div>
-  )
-}
+  return <div>NeonClient</div>;
+};
 
-export default NeonClient
+export default NeonClient;

@@ -1,0 +1,10 @@
+procs:
+  next:
+    cmd: npm run dev
+    cwd: .
+    env:
+      NODE_ENV: development
+
+  inngest:
+    cmd: npx --ignore-scripts=false inngest-cli@latest dev
+    cwd: .

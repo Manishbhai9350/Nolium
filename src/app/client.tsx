@@ -23,10 +23,18 @@ const Client = () => {
         }
     }))
 
-  return (
-    <div className="flex flex-col gap-2 justify-center items-center">
-        <h1>Meowflows</h1>
+    const testAI = useMutation(trpc.testAi.mutationOptions({
+        onSuccess(){
+            toast.success('Started Testing AI Models')
+        }
+    }))
 
+  return (
+    <div className="flex flex-col gap-2 justify-center items-center p-6">
+        <Button disabled={testAI.isPending} onClick={() => testAI.mutate()} >
+            Test AI
+        </Button>
+        <h1>Meowflows</h1>
         {
             JSON.stringify(meows,null,2)
         }

@@ -22,7 +22,7 @@ export const auth = betterAuth({
             }
           ],
           authenticatedUsersOnly:true,
-          successUrl:process.env.POLER_SUCCESS_URL
+          successUrl:process.env.POLAR_SUCCESS_URL
         }),
         portal()
       ]

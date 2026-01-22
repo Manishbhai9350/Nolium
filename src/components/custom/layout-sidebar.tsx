@@ -14,14 +14,21 @@ import {
 import { SidebarData } from "@/lib/sidebar-data";
 import Link from "next/link";
 import Image from "next/image";
-import { CreditCardIcon, GemIcon, LogOutIcon } from "lucide-react";
+import { CreditCardIcon, GemIcon, Loader2Icon, LoaderIcon, LogOutIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useHasActiveSubscription } from "@/features/billing/subscriptions-hook";
+import { useQueryClient } from "@tanstack/react-query";
 
 const LayoutSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+
+  const queryClient = useQueryClient()
+
+  const { hasActiveSubscription, subscription, isLoading } =
+    useHasActiveSubscription();
 
   return (
     <Sidebar collapsible="icon">
@@ -66,32 +73,43 @@ const LayoutSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip="Billing Portal"
-            >
+            {
+              isLoading && (
+                <div className="w-full flex justify-center items-center">
+                  <Loader2Icon className="loader animate-spin size-6" />
+                </div>
+              )
+            }
+            {!hasActiveSubscription && !isLoading && (
+              <SidebarMenuButton onClick={() => authClient.checkout({ slug:'pro' })} tooltip="Upgrade To Pro">
+                <GemIcon className="size-4" />
+                <span>Upgrade To Pro</span>
+              </SidebarMenuButton>
+            )}
+            <SidebarMenuButton onClick={() => authClient.customer.portal()} tooltip="Billing Portal">
               <CreditCardIcon className="size-4" />
               <span>Payments & Billings</span>
             </SidebarMenuButton>
             <SidebarMenuButton
-              tooltip="Upgrade To Pro"
-            >
-              <GemIcon className="size-4" />
-              <span>Upgrade To Pro</span>
-            </SidebarMenuButton>
-            <SidebarMenuButton
               onClick={() => {
                 authClient.signOut({
-                  fetchOptions:{
-                    onSuccess(){
-                      toast.success('Logged Out')
-                      router.push('/login')
+                  fetchOptions: {
+                    onSuccess() {
+
+                      // Uncaching Active Subscription Query
+                      queryClient.invalidateQueries({
+                        queryKey:['active-subscription']
+                      })
+                      toast.success("Logged Out");
+                      router.push("/login");
                     },
                     onError(context) {
-                      toast.error('Failed To Log Out: ' + context.error.message)
-                      
+                      toast.error(
+                        "Failed To Log Out: " + context.error.message,
+                      );
                     },
-                  }
-                })
+                  },
+                });
               }}
               tooltip="Log Out"
             >

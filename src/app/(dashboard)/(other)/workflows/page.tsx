@@ -4,7 +4,7 @@ import React from 'react'
 const WorkflowsPage = async () => {
   await requireAuth()
   return (
-    <div>WorkflowPage</div>
+    <div>Workflows</div>
   )
 }
 

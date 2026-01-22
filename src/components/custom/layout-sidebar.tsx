@@ -48,7 +48,7 @@ const LayoutSidebar = () => {
                       isActive={
                         pathname === "/"
                           ? item.path === "/"
-                          : item.path.startsWith(pathname)
+                          : pathname.startsWith(item.path)
                       }
                     >
                       <Link href={item.path} prefetch>

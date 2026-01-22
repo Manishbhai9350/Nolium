@@ -1,10 +1,6 @@
 procs:
   next:
-    cmd: npm run dev
-    cwd: .
-    env:
-      NODE_ENV: development
+    cmd: ["npm", "run", "dev"]
 
   inngest:
-    cmd: npx --ignore-scripts=false inngest-cli@latest dev
-    cwd: .
+    cmd: ["npx", "inngest-cli@latest", "dev"]

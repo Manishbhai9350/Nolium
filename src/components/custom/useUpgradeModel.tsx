@@ -2,7 +2,7 @@ import { TRPCClientError } from "@trpc/client";
 import React, { useState } from "react";
 import UpgradeDialog from "./upgradeDialog";
 
-const UseUpdrageModel = () => {
+const UseUpgradeModel = () => {
   const [open, setOpen] = useState(false);
 
   const handleError = (error: unknown) => {
@@ -23,4 +23,4 @@ const UseUpdrageModel = () => {
   };
 };
 
-export default UseUpdrageModel;
+export default UseUpgradeModel;

@@ -19,7 +19,6 @@ const UpgradeDialog = ({ open, setOpen }: UpgradeProps) => {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
-        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Upgrade To Pro</AlertDialogTitle>
             <AlertDialogDescription>
@@ -32,7 +31,6 @@ const UpgradeDialog = ({ open, setOpen }: UpgradeProps) => {
               Upgrade
             </Button>
           </AlertDialogFooter>
-        </AlertDialogContent>
       </AlertDialogContent>
     </AlertDialog>
   );

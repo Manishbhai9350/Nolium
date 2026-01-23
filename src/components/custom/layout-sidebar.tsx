@@ -73,13 +73,13 @@ const LayoutSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            {
+            {/* {
               isLoading && (
                 <div className="w-full flex justify-center items-center">
                   <Loader2Icon className="loader animate-spin size-6" />
                 </div>
               )
-            }
+            } */}
             {!hasActiveSubscription && !isLoading && (
               <SidebarMenuButton onClick={() => authClient.checkout({ slug:'pro' })} tooltip="Upgrade To Pro">
                 <GemIcon className="size-4" />

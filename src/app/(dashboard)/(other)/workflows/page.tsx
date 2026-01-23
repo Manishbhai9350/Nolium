@@ -1,28 +1,24 @@
-'use client';
+import { requireAuth } from '@/lib/auth-utils';
+import { HydrateClient } from '@/trpc/server';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Suspense } from 'react';
+import WorkflowsList from '@/features/workflows/components/workflowsList';
+import { prefetchWorkflows } from '@/features/workflows/server/prefetch';
 
-import { Button } from '@/components/ui/button'
-import { useTRPC } from '@/trpc/client'
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
-// import { requireAuth } from '@/lib/auth-utils'
+const WorkflowsPage = async () => {
+  
+  await requireAuth()
+  
+  prefetchWorkflows()
 
-const WorkflowsPage = /* async */ () => {
-  const trcp = useTRPC()
-  const testAI = useMutation(trcp.testAi.mutationOptions({
-    onSuccess(){
-      toast.success("Test AI")
-    },
-    onError({ message }) {
-      toast.error(message)
-    },
-  }))
-  // await requireAuth()
   return (
-    <div className='p-8'>
-      <Button disabled={testAI.isPending} onClick={() => testAI.mutate()}>
-        Test AI
-      </Button>
-    </div>
+    <HydrateClient>
+      <ErrorBoundary fallback={<p>Error...</p>} >
+        <Suspense fallback={<p>Loading...</p>}>
+          <WorkflowsList />
+        </Suspense>
+      </ErrorBoundary>
+    </HydrateClient>
   )
 }
 

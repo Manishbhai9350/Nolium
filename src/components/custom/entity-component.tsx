@@ -67,6 +67,7 @@ export const EntitySearch = ({
         value={value} 
         onChange={e => onChange(e.target.value)} 
         placeholder={placeholder} 
+        aria-label={placeholder}
         className="w-full pl-8"
       />
     </div>

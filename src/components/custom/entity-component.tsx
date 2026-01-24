@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, SearchIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { Input } from "../ui/input";
 
 type EntityProps = {
   title: string;
@@ -13,13 +14,19 @@ type EntityProps = {
   onNewLabel: string;
 };
 
+type EntitySearchProps = {
+  value: string;
+  onChange: (val:string) => void;
+  placeholder?: string;
+};
+
 const EntityComponent = ({
   description,
   onNewLabel,
   title,
   onNew,
   onNewHref,
-  disabled
+  disabled,
 }: EntityProps) => {
   return (
     <div className="w-full h-fit flex justify-between items-center">
@@ -45,6 +52,26 @@ const EntityComponent = ({
       )}
     </div>
   );
+};
+
+export const EntitySearch = ({
+  onChange,
+  placeholder = 'Search',
+  value
+}: EntitySearchProps) => {
+
+  return (
+    <div className="w-full relative my-4">
+      <SearchIcon className="size-4 absolute left-2 top-1/2 -translate-y-1/2" />
+      <Input 
+        value={value} 
+        onChange={e => onChange(e.target.value)} 
+        placeholder={placeholder} 
+        aria-label={placeholder}
+        className="w-full pl-8"
+      />
+    </div>
+  )
 };
 
 export default EntityComponent;

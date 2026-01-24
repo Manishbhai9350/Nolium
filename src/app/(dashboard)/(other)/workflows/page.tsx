@@ -1,25 +1,26 @@
-import { requireAuth } from '@/lib/auth-utils';
-import { HydrateClient } from '@/trpc/server';
-import { ErrorBoundary } from 'react-error-boundary';
-import { Suspense } from 'react';
-import WorkflowsList from '@/features/workflows/components/workflowsList';
-import { prefetchWorkflows } from '@/features/workflows/server/prefetch';
+import { requireAuth } from "@/lib/auth-utils";
+import { prefetchWorkflows } from "@/features/workflows/server/prefetch";
+import { prefetchParams } from "@/features/workflows/server/prefetch-params";
+import { SearchParams } from "nuqs/server";
+import WorkflowClientPage from "@/features/workflows/components/workflowClientPage";
+import WorkflowHeader from "@/features/workflows/components/workflowHeader";
 
-const WorkflowsPage = async () => {
-  
-  await requireAuth()
-  
-  prefetchWorkflows()
-
-  return (
-    <HydrateClient>
-      <ErrorBoundary fallback={<p>Error...</p>} >
-        <Suspense fallback={<p>Loading...</p>}>
-          <WorkflowsList />
-        </Suspense>
-      </ErrorBoundary>
-    </HydrateClient>
-  )
+interface WorkflowProps {
+  searchParams: Promise<SearchParams>;
 }
 
-export default WorkflowsPage
+const page = async ({ searchParams }: WorkflowProps) => {
+  await requireAuth();
+
+  const params = await prefetchParams(searchParams);
+  prefetchWorkflows(params);
+
+  return (
+    <div className="p-4 flex flex-col md:px-6 md:py-4 max-h-screen h-full">
+      <WorkflowHeader />
+      <WorkflowClientPage />
+    </div>
+  );
+};
+
+export default page;

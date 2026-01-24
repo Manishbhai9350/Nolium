@@ -1,22 +1,32 @@
-'use client';
-
+"use client";
 import useSuspenseWorkflows from "../hooks/useSuspenseWorkflows";
-import WorkflowHeader from "./workflowHeader";
+import WorkflowPagination from "./workflowPagination";
 
 const WorkflowsList = () => {
-
-    const workflows = useSuspenseWorkflows()
+  const {
+    data:{
+      hasNextPage,
+      hasPrevPage,
+      items,
+      page,
+      pageSize,
+      totalPages
+    },
+    isPending
+  } = useSuspenseWorkflows();
 
   return (
-    <div className="p-4 md:px-6 md:py-4">
-        <WorkflowHeader />
-        {
-            workflows.data && (
-                JSON.stringify(workflows.data,null,2)
-            )
-        }
-    </div>
-  )
-}
+      <div className="flex flex-col flex-1 justify-between">
+        {items && JSON.stringify(items, null, 2)}
+        <WorkflowPagination
+          hasNextpage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+          page={page}
+          totalPages={totalPages}
+          disabled={isPending}
+        />
+      </div>
+  );
+};
 
-export default WorkflowsList
+export default WorkflowsList;

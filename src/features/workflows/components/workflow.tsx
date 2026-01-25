@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import type { WorkflowModel } from "@/generated/prisma/models/Workflow";
 import {
@@ -13,11 +14,29 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useWorkflowParams } from "../hooks/useWorkflowParams";
 import useEntitySearch from "@/components/custom/entity-search";
-import { useCreateWorkflow, useRemoveWorkflow } from "../hooks/useWorkflow";
+import {
+  useCreateWorkflow,
+  useRemoveWorkflow,
+  useUpdateWorkflowName,
+} from "../hooks/useWorkflow";
 import useSuspenseWorkflows from "../hooks/useSuspenseWorkflows";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
-import { TrashIcon, WorkflowIcon } from "lucide-react";
+import { LoaderIcon, TrashIcon, WorkflowIcon } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
+import useSuspenseWorkflow from "../hooks/useSuspenseWorkflow";
+import { useEffect, useState } from "react";
+import { usePrompt } from "@/hooks/use-prompt";
+import { error } from "console";
+import { cn } from "@/lib/utils";
 
 interface WorkflowPaginationProps {
   page: number;
@@ -30,6 +49,96 @@ interface WorkflowPaginationProps {
 interface WorkflowItemProps {
   workflow: WorkflowModel;
 }
+
+const WorkflowBreadCrumbInput = ({ workflowId }: { workflowId: string }) => {
+  const workflow = useSuspenseWorkflow({ workflowId });
+  const [name, setName] = useState("");
+
+  const updateName = useUpdateWorkflowName();
+  const { modal, prompt } = usePrompt();
+
+  useEffect(() => {
+    setName(workflow.data.name);
+
+    return () => {};
+  }, [workflow.data.name]);
+
+  function handleOnClick() {
+    if (!name) return;
+    prompt({
+      async onUpdate(value) {
+        updateName.mutate(
+          {
+            name: value,
+            id: workflowId,
+          },
+          {
+            onSuccess(data) {
+              toast.success(`Successfully renamed workflow to ${data.name}`);
+              setName(data.name);
+            },
+            onError(error) {
+              toast.error(
+                `Failed to rename workflow to ${value}, Error ${error.message}`,
+              );
+            },
+          },
+        );
+      },
+      title: "Update Workflow name",
+      defaultValue: name,
+    });
+  }
+
+  return (
+    <>
+      {modal}
+      <BreadcrumbItem
+        onClick={handleOnClick}
+        className={cn("relative", !updateName.isPending && "cursor-pointer")}
+      >
+        {updateName.isPending && (
+          <div className="absolute top-1/2 left-1/2 -translate-1/2">
+            <LoaderIcon className="size-5 animate-spin" />
+          </div>
+        )}
+        <p className={cn(updateName.isPending && "opacity-20")}>{name}</p>
+      </BreadcrumbItem>
+    </>
+  );
+};
+
+const WorkflowBreadCrumb = ({ workflowId }: { workflowId: string }) => {
+  return (
+    <div className="w-full px-2 h-full flex justify-between items-center">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/workflows" prefetch>
+                workflows
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <WorkflowBreadCrumbInput workflowId={workflowId} />
+        </BreadcrumbList>
+      </Breadcrumb>
+    </div>
+  );
+};
+
+export const WorkflowPageHeader = ({ workflowId }: { workflowId: string }) => {
+  return (
+    <header className="w-full flex justify-center items-center border-b px-4 py-2">
+      <SidebarTrigger />
+      <WorkflowBreadCrumb workflowId={workflowId} />
+      <div className="ml-auth">
+        <Button onClick={() => {}}>Save</Button>
+      </div>
+    </header>
+  );
+};
 
 export const WorkflowHeader = () => {
   const router = useRouter();

@@ -16,7 +16,7 @@ import useEntitySearch from "@/components/custom/entity-search";
 import { useCreateWorkflow, useRemoveWorkflow } from "../hooks/useWorkflow";
 import useSuspenseWorkflows from "../hooks/useSuspenseWorkflows";
 import { Button } from "@/components/ui/button";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
 import { TrashIcon, WorkflowIcon } from "lucide-react";
 
 interface WorkflowPaginationProps {
@@ -144,9 +144,9 @@ export const WorkflowsEmpty = () => {
     });
   };
 
-  const emptyText = !!params.search ?
-    `No workflow exist with "${params.search}" click Add Item to create an workflow` :
-    `You havn't created any workflow yet click Add Item to create one`
+  const emptyText = params.search
+    ? `No workflows exist for "${params.search}". Click Add Item to create a workflow.`
+    : "You haven't created any workflows yet. Click Add Item to create one.";
 
   return (
     <>
@@ -210,7 +210,7 @@ export const WorkflowItem = ({ workflow }: WorkflowItemProps) => {
       action: handleRemove,
       icon: <TrashIcon />,
       label: "Delete",
-      variant: 'destructive'
+      variant: "destructive",
     },
   ];
 
@@ -220,8 +220,8 @@ export const WorkflowItem = ({ workflow }: WorkflowItemProps) => {
       href={`/workflows/${workflow.id}`}
       actions={actions}
       description={`
-        Created ${ formatDistanceToNow(workflow.createdAt , { addSuffix: true } ) }
-        Updated ${ formatDistanceToNow(workflow.updatedAt || workflow.createdAt , { addSuffix: true }) }
+        Created ${formatDistanceToNow(workflow.createdAt, { addSuffix: true })}
+        Updated ${formatDistanceToNow(workflow.updatedAt || workflow.createdAt, { addSuffix: true })}
         `}
       image={<WorkflowIcon />}
       title={workflow.name}

@@ -65,7 +65,7 @@ export type MenuAction = {
   action: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   label: string;
   icon: React.ReactNode;
-  variant?: 'default' | 'destructive' 
+  variant?: "default" | "destructive";
 };
 
 type EntitiyItemProps = {
@@ -145,14 +145,12 @@ export const EntityEmpty = ({
           </EmptyTitle>
         </EmptyHeader>
         <EmptyContent>
-          {!!onNew && (
-            <>
-              {message ? message : "No item's here"}
-              <Button disabled={disabled} onClick={onNew}>
-                <PlusIcon />
-                {onNewLabel}
-              </Button>
-            </>
+          <p>{message ?? "No items here"}</p>
+          {onNew && (
+            <Button disabled={disabled} onClick={onNew}>
+              <PlusIcon />
+              {onNewLabel}
+            </Button>
           )}
         </EmptyContent>
       </Empty>
@@ -160,7 +158,7 @@ export const EntityEmpty = ({
   );
 };
 
-export const EntityLoading = ({ lable }: EntityLoadingProps) => {
+export const EntityLoading = ({ lable = 'Loading...' }: EntityLoadingProps) => {
   return (
     <div className="h-full flex flex-col justify-center items-center">
       <LoaderIcon className="size-8 animate-spin" />
@@ -210,47 +208,49 @@ export const EntityItem = ({
   title,
   actions,
   disabled = false,
-  href
+  href,
 }: EntitiyItemProps) => {
-  return <Link href={href}>
-    <Card>
-      <CardContent className={
-        cn(
-          "flex justify-between items-center",
-          disabled && 'opacity-50'
-        )
-      }>
-        <div className="flex justify-center items-center h-full aspect-square">
-          {image}
-        </div>
-        <div className="px-4 flex flex-1 flex-col justify-center items-start gap-1">
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <MoreVerticalIcon />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {actions.map(({ action, icon, label, variant = 'default' }) => (
-              <DropdownMenuItem 
-                key={label}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  if(disabled) return;
-                  action(e);
-                }}
-                className="cursor-pointer"
-                variant={variant}
-              >
+  return (
+    <Link href={href}>
+      <Card>
+        <CardContent
+          className={cn(
+            "flex justify-between items-center",
+            disabled && "opacity-50",
+          )}
+        >
+          <div className="flex justify-center items-center h-full aspect-square">
+            {image}
+          </div>
+          <div className="px-4 flex flex-1 flex-col justify-center items-start gap-1">
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <MoreVerticalIcon />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {actions.map(({ action, icon, label, variant = "default" }) => (
+                <DropdownMenuItem
+                  key={label}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (disabled) return;
+                    action(e);
+                  }}
+                  className="cursor-pointer"
+                  variant={variant}
+                >
                   {icon}
                   <span>{label}</span>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardContent>
-    </Card>
-  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardContent>
+      </Card>
+    </Link>
+  );
 };

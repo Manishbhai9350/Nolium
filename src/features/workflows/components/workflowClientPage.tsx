@@ -1,13 +1,14 @@
 import { HydrateClient } from "@/trpc/server"
 import { Suspense } from "react";
 import { ErrorBoundary } from 'react-error-boundary';
-import WorkflowsList from "./workflowsList";
+import { EntityError, EntityLoading } from "@/components/custom/entity-component";
+import { WorkflowsList } from "./workflow";
 
 const workflowClientPage = () => {
   return (
     <HydrateClient>
-      <ErrorBoundary fallback={<p>Error...</p>} >
-        <Suspense fallback={<p>Loading...</p>}>
+      <ErrorBoundary fallback={<EntityError error="Failed to load workflows" />} >
+        <Suspense fallback={<EntityLoading lable="Loading Workflows" />}>
           <WorkflowsList />
         </Suspense>
       </ErrorBoundary>

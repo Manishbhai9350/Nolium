@@ -1,6 +1,7 @@
 import { WorkflowPageHeader } from "@/features/workflows/components/workflow";
 import { prefetchWorkflow } from "@/features/workflows/server/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
+import Editor from "@/features/editor/editor";
 
 interface WorkflowProps {
   params: Promise<{
@@ -16,9 +17,7 @@ const WorkflowPage = async ({ params }: WorkflowProps) => {
   return (
     <main className="w-full h-full flex flex-col">
       <WorkflowPageHeader workflowId={workflowId} />
-      <div className="flex-1">
-        editor
-      </div>
+      <Editor workflowId={workflowId} />
     </main>
   );
 };

@@ -28,3 +28,16 @@ export const useRemoveWorkflow = () => {
     }),
   );
 };
+
+export const useUpdateWorkflowName = () => {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.workflows.updateName.mutationOptions({
+      onSuccess() {
+        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+      },
+    }),
+  );
+};

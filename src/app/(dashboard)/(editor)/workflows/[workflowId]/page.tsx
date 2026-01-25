@@ -1,20 +1,26 @@
+import { WorkflowPageHeader } from "@/features/workflows/components/workflow";
+import { prefetchWorkflow } from "@/features/workflows/server/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
 
-
 interface WorkflowProps {
-    params: Promise<{
-        workflowId: string;
-    }>
+  params: Promise<{
+    workflowId: string;
+  }>;
 }
 
-const WorkflowPage = async ({ params }:WorkflowProps) => {
+const WorkflowPage = async ({ params }: WorkflowProps) => {
+  await requireAuth();
 
-    await requireAuth()
-
-    const { workflowId } = await params;
+  const { workflowId } = await params;
+  prefetchWorkflow(workflowId);
   return (
-    <div>Workflow Id: {workflowId}</div>
-  )
-}
+    <main className="w-full h-full flex flex-col">
+      <WorkflowPageHeader workflowId={workflowId} />
+      <div className="flex-1">
+        editor
+      </div>
+    </main>
+  );
+};
 
-export default WorkflowPage
+export default WorkflowPage;

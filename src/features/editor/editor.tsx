@@ -18,6 +18,7 @@ import "@xyflow/react/dist/style.css";
 import useSuspenseWorkflow from "../workflows/hooks/useSuspenseWorkflow";
 import { nodeComponent } from "@/config/node-component";
 import { AddNodeButton } from "@/components/custom/add-node-button";
+import NodeSelector from "@/components/custom/add-node-sheet";
 
 // const initialNodes = [
 //   { id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
@@ -27,6 +28,8 @@ import { AddNodeButton } from "@/components/custom/add-node-button";
 
 export default function Editor({ workflowId }:{workflowId:string}) {
   const workflow = useSuspenseWorkflow({ workflowId })
+
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   const [nodes, setNodes] = useState(workflow.data.nodes);
   const [edges, setEdges] = useState(workflow.data.edges);
@@ -66,7 +69,8 @@ export default function Editor({ workflowId }:{workflowId:string}) {
         <MiniMap />
         <Background />
         <Panel position="top-right" >
-          <AddNodeButton />
+          <NodeSelector open={sheetOpen} onOpenChange={v => setSheetOpen(v)} />
+            <AddNodeButton onClick={() => setSheetOpen(true)} />
         </Panel>
       </ReactFlow>
     </div>

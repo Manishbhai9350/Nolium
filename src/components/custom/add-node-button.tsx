@@ -2,9 +2,9 @@ import { PlusIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { memo } from "react";
 
-export const AddNodeButton = memo(() => {
+export const AddNodeButton = memo(({ onClick }:{onClick:() => void}) => {
   return (
-    <Button variant="outline" size="icon" className="bg-background">
+    <Button onClick={onClick} variant="outline" size="icon" className="bg-background">
       <PlusIcon className="size-4" />
     </Button>
   );

@@ -57,7 +57,7 @@ const LoginForm = () => {
           router.push("/");
         },
         onError(ctx) {
-          toast.success(ctx.error.message);
+          toast.error(ctx.error.message);
         },
       },
     );

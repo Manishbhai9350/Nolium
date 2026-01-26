@@ -19,18 +19,26 @@ const UpgradeDialog = ({ open, setOpen }: UpgradeProps) => {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Upgrade To Pro</AlertDialogTitle>
-            <AlertDialogDescription>
-              An active subscription required to use this feature. Upgrade to
-              Pro to unlock all Pro features.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <Button onClick={() => authClient.checkout({ slug: "pro" })}>
-              Upgrade
-            </Button>
-          </AlertDialogFooter>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Upgrade To Pro</AlertDialogTitle>
+          <AlertDialogDescription>
+            An active subscription required to use this feature. Upgrade to Pro
+            to unlock all Pro features.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button onClick={() => setOpen(false)} variant="outline">
+            Cancel
+          </Button>
+          <Button
+            onClick={async () => {
+              const res = await authClient.checkout({ slug: "pro" });
+              window.location.href = res.url;
+            }}
+          >
+            Upgrade
+          </Button>
+        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );

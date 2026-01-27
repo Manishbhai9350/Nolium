@@ -19,6 +19,8 @@ import useSuspenseWorkflow from "../workflows/hooks/useSuspenseWorkflow";
 import { nodeComponent } from "@/config/node-component";
 import { AddNodeButton } from "@/components/custom/add-node-button";
 import NodeSelector from "@/components/custom/add-node-sheet";
+import { useSetAtom } from 'jotai';
+import { editorAtom } from "./state/editor.atom";
 
 // const initialNodes = [
 //   { id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
@@ -33,6 +35,8 @@ export default function Editor({ workflowId }:{workflowId:string}) {
 
   const [nodes, setNodes] = useState(workflow.data.nodes);
   const [edges, setEdges] = useState(workflow.data.edges);
+
+  const setEditor = useSetAtom(editorAtom);
 
 
   const onNodesChange = useCallback(
@@ -61,6 +65,7 @@ export default function Editor({ workflowId }:{workflowId:string}) {
         onConnect={onConnect}
         nodeTypes={nodeComponent}
         fitView
+        onInit={setEditor}
         proOptions={{
             hideAttribution:true
         }}

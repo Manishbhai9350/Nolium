@@ -9,6 +9,7 @@ import z from "zod";
 import { PAGINATION } from "./constants";
 import type { Node, Edge } from "@xyflow/react";
 import { NodeType } from "@/generated/prisma/enums";
+import { TRPCError } from "@trpc/server";
 
 export const workflowRouters = createTRPCRouter({
   create: premiumProcedure.mutation(async ({ ctx }) => {
@@ -17,18 +18,94 @@ export const workflowRouters = createTRPCRouter({
         name: generateSlug(3),
         userId: ctx.auth.user.id,
         nodes: {
-          create:{
-            type:NodeType.INITIAL,
-            position:{x:0,y:0},
-            name:NodeType.INITIAL
-          }
-        }
+          create: {
+            type: NodeType.INITIAL,
+            position: { x: 0, y: 0 },
+            name: NodeType.INITIAL,
+          },
+        },
       },
-
     });
 
     return workflow;
   }),
+
+  save: protectedProcedure
+    .input(
+      z.object({
+        workflowId: z.string(),
+        nodes: z.array(
+          z.object({
+            id: z.string(),
+            type: z.string().nullish(),
+            position: z.object({ x: z.number(), y: z.number() }) || {},
+            data: z.record(z.string(), z.any()).optional(),
+          }),
+        ),
+        edges: z.array(
+          z.object({
+            source: z.string(),
+            target: z.string(),
+            sourceHandle: z.string().nullish(),
+            targetHandle: z.string().nullish(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { workflowId, nodes, edges } = input;
+      // Deleting Existing Workflow Nodes, Edges
+      await prisma.workflow.findFirstOrThrow({
+        where: {
+          id: workflowId,
+          userId: ctx.auth.user.id
+        }
+      })
+
+      return await prisma.$transaction(async trscn => {
+
+        // Deleting Existing Nodes that will also delete Connections (Edges) with Cascade
+        await trscn.node.deleteMany({
+          where: { workflowId }
+        })
+
+        // Creating new Nodes
+        await trscn.node.createMany({
+          data: nodes.map(node => ({
+            id: node.id,
+            name: node.type || 'unknown',
+            type: node.type as NodeType,
+            position: node.position,
+            data: node.data || {},
+            workflowId
+          }))
+        });
+
+        // Creating new Edges
+        await trscn.connection.createMany({
+          data: edges.map(edge => ({
+            workflowId,
+            fromNodeId: edge.source,
+            toNodeId: edge.target,
+            fromOutput: edge.sourceHandle || "main",
+            toInput: edge.targetHandle || "main"
+          }))
+        })
+
+        return await trscn.workflow.update({
+          where: {
+            id: workflowId,
+            userId: ctx.auth.user.id
+          },
+          data: {
+            updatedAt: new Date()
+          }
+        })
+
+      })
+
+    }),
+
 
   updateName: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
@@ -89,10 +166,10 @@ export const workflowRouters = createTRPCRouter({
       }));
 
       return {
-        id:workflow.id,
-        name:workflow.name,
+        id: workflow.id,
+        name: workflow.name,
         nodes,
-        edges
+        edges,
       };
     }),
   getMany: protectedProcedure

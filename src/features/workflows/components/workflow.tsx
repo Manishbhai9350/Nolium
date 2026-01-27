@@ -17,6 +17,7 @@ import useEntitySearch from "@/components/custom/entity-search";
 import {
   useCreateWorkflow,
   useRemoveWorkflow,
+  useSaveWorkflow,
   useUpdateWorkflowName,
 } from "../hooks/useWorkflow";
 import useSuspenseWorkflows from "../hooks/useSuspenseWorkflows";
@@ -37,6 +38,9 @@ import { useEffect, useState } from "react";
 import { usePrompt } from "@/hooks/use-prompt";
 import { error } from "console";
 import { cn } from "@/lib/utils";
+import { useAtomValue } from "jotai";
+import { editorAtom } from "@/features/editor/state/editor.atom";
+import { Edge } from "@xyflow/react";
 
 interface WorkflowPaginationProps {
   page: number;
@@ -129,12 +133,26 @@ const WorkflowBreadCrumb = ({ workflowId }: { workflowId: string }) => {
 };
 
 export const WorkflowPageHeader = ({ workflowId }: { workflowId: string }) => {
+
+  const save = useSaveWorkflow({ workflowId });
+  const editorInstance = useAtomValue(editorAtom);
+
+  const handleSave = () => {
+    if(!editorInstance) return;
+
+    save.mutate({
+      workflowId,
+      nodes: editorInstance.getNodes(),
+      edges: editorInstance.getEdges(),
+    })
+  }
+
   return (
     <header className="w-full flex justify-center items-center border-b px-4 py-2">
       <SidebarTrigger />
       <WorkflowBreadCrumb workflowId={workflowId} />
       <div className="ml-auth">
-        <Button onClick={() => {}}>Save</Button>
+        <Button disabled={save.isPending} onClick={handleSave}>Save</Button>
       </div>
     </header>
   );

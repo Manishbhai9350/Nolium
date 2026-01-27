@@ -55,19 +55,12 @@ export const workflowRouters = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { workflowId, nodes, edges } = input;
       // Deleting Existing Workflow Nodes, Edges
-      const workflow = await prisma.workflow.findFirstOrThrow({
+      await prisma.workflow.findFirstOrThrow({
         where: {
           id: workflowId,
           userId: ctx.auth.user.id
         }
       })
-
-      if(!workflow) {
-        throw new TRPCError({
-          code:"FORBIDDEN",
-          message: "Workflow does not exist"
-        })
-      };
 
       return await prisma.$transaction(async trscn => {
 

@@ -18,7 +18,7 @@ const TriggerDialog = ({ onOpenChange, open }: Props) => {
         <DialogHeader>
           <DialogTitle>Trigger Workflow</DialogTitle>
           <DialogDescription>
-            Use workflow trigget to execute workflow
+            Use workflow trigger to execute workflow
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

@@ -119,7 +119,7 @@ const HttpRequestDialog = ({ onOpenChange, open, initial, onSave }: Props) => {
                 name="endpoint"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Method</FormLabel>
+                    <FormLabel>Endpoint</FormLabel>
                     <Input
                       placeholder="https://example.com/users/{{httpResponse.data.id}}"
                       value={field.value}

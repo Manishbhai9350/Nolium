@@ -39,7 +39,7 @@ export const BaseExecutionNode = memo(
             return updatedNodes;
           })
           setEdges(edges => {
-            const updatedEdges = edges.filter(edge => !( edge.source == id || edge.target ));
+            const updatedEdges = edges.filter(edge => edge.source !== id && edge.target !== id);
     
             return updatedEdges;
           })

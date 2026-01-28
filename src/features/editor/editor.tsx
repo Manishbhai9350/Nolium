@@ -21,6 +21,7 @@ import { AddNodeButton } from "@/components/custom/add-node-button";
 import NodeSelector from "@/components/custom/add-node-sheet";
 import { useSetAtom } from 'jotai';
 import { editorAtom } from "./state/editor.atom";
+import ManualExecutionWorkflowButton from "../executions/components/manual-execution-button";
 
 // const initialNodes = [
 //   { id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
@@ -76,6 +77,9 @@ export default function Editor({ workflowId }:{workflowId:string}) {
         <Panel position="top-right" >
           <NodeSelector open={sheetOpen} onOpenChange={v => setSheetOpen(v)} />
             <AddNodeButton onClick={() => setSheetOpen(true)} />
+        </Panel>
+        <Panel position="top-center" >
+          <ManualExecutionWorkflowButton workflowId={workflowId} />
         </Panel>
       </ReactFlow>
     </div>

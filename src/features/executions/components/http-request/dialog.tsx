@@ -28,141 +28,177 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 
-type FormMethods = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+const HttpFormSchema = z.object({
+  method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
+  endpoint: z
+    .string()
+    .min(1, "Endpoint is required")
+    .refine((value) => {
+      // Allow {{variables}} in URL
+      const cleaned = value.replace(/{{.*?}}/g, "test");
+      try {
+        new URL(cleaned);
+        return true;
+      } catch {
+        return false;
+      }
+    }, "Enter a valid URL"),
+  body: z.string().optional().nullable(),
+});
+
+export type FormDataType = z.infer<typeof HttpFormSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onSave: (v: FormDataType) => void;
   initial: FormDataType;
+  /** recommended: pass nodeId to fully isolate dialog */
+  nodeId?: string;
 }
 
-const HttpFormSchema = z.object({
-  endpoint: z.url({ message:'Enter a valid url' }),
-  method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
-  body: z.string().optional(),
-});
-
-export type FormDataType = z.infer<typeof HttpFormSchema>;
-
-const HttpRequestDialog = ({ onOpenChange, open, initial, onSave }: Props) => {
-  const form = useForm({
+const HttpRequestDialog = ({
+  open,
+  onOpenChange,
+  onSave,
+  initial,
+  nodeId,
+}: Props) => {
+  const form = useForm<FormDataType>({
     resolver: zodResolver(HttpFormSchema),
     defaultValues: initial,
   });
 
+  /**
+   * Reset ONLY when dialog opens
+   * (prevents values from disappearing while typing)
+   */
+  const wasOpen = useRef(false);
+
   useEffect(() => {
-    if (open) {
+    if (open && !wasOpen.current) {
       form.reset(initial);
+      wasOpen.current = true;
     }
 
-    return () => {};
-  }, [initial, form, open]);
+    if (!open) {
+      wasOpen.current = false;
+    }
+  }, [open, initial, form]);
 
   const handleSubmit = (values: FormDataType) => {
-    onSave(values)
-    onOpenChange(false)
+    onSave(values);
+    onOpenChange(false);
   };
 
-  const selectedMethod = form.watch("method");
-  const enableBody = ["POST", "PUT", "PATCH"].includes(selectedMethod);
+  const method = form.watch("method");
+  const enableBody =
+    method === "POST" || method === "PUT" || method === "PATCH";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      key={nodeId} // 👈 ensures isolation between nodes
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>HTTP Request</DialogTitle>
-          <DialogDescription>Http Request node</DialogDescription>
+          <DialogDescription>HTTP Request node</DialogDescription>
         </DialogHeader>
-        <div>
-          <Form {...form}>
-            <form
-              className="space-y-4 my-4"
-              onSubmit={form.handleSubmit(handleSubmit)}
-            >
-              <FormField
-                control={form.control}
-                name="method"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Method</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger value={"Method"} className="w-full">
-                          <SelectValue placeholder="Select a Method" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="GET">GET</SelectItem>
-                        <SelectItem value="POST">POST</SelectItem>
-                        <SelectItem value="PUT">PUT</SelectItem>
-                        <SelectItem value="PATCH">PATCH</SelectItem>
-                        <SelectItem value="DELETE">DELETE</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      The method to use for this request
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="endpoint"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Endpoint</FormLabel>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4 my-4"
+          >
+            {/* METHOD */}
+            <FormField
+              control={form.control}
+              name="method"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Method</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a Method" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="GET">GET</SelectItem>
+                      <SelectItem value="POST">POST</SelectItem>
+                      <SelectItem value="PUT">PUT</SelectItem>
+                      <SelectItem value="PATCH">PATCH</SelectItem>
+                      <SelectItem value="DELETE">DELETE</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>The HTTP method to use</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* ENDPOINT */}
+            <FormField
+              control={form.control}
+              name="endpoint"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Endpoint</FormLabel>
+                  <FormControl>
                     <Input
-                      placeholder="https://example.com/users/{{httpResponse.data.id}}"
-                      value={field.value}
-                      onChange={field.onChange}
+                      {...field}
+                      placeholder="https://api.example.com/users/{{userId}}"
                     />
-                    <FormDescription>
-                      {"Use {{variable}} to use the variables in request"}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {enableBody && (
-                <FormField
-                  control={form.control}
-                  name="body"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Body</FormLabel>
+                  </FormControl>
+                  <FormDescription>
+                    Use <code>{"{{variable}}"}</code> to inject data
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* BODY */}
+            {enableBody && (
+              <FormField
+                control={form.control}
+                name="body"
+                render={({ field:{value,...rest} }) => (
+                  <FormItem>
+                    <FormLabel>Body</FormLabel>
+                    <FormControl>
                       <Textarea
-                        placeholder={
-                          '{\n    "name":"{{httpResponse.data.name}}",\n    "userId":"{{httpResponse.data.userId}}",\n    "data":"{{httpResponse.data.data}"\n }'
-                        }
-                        value={field.value}
-                        onChange={field.onChange}
+                        value={value || ''}
+                        {...rest}
+                        placeholder={`{
+                            "name": "{{httpResponse.data.name}}",
+                            "userId": "{{httpResponse.data.id}}"
+                          }`}
                         className="min-h-[150px]"
                       />
-                      <FormDescription>
-                        {"Use {{variable}} to use the variables in request"}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              <DialogFooter>
-                <Button type="submit" className="w-full">
-                  Save
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </div>
+                    </FormControl>
+                    <FormDescription>JSON body with variables</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <DialogFooter>
+              <Button type="submit" className="w-full">
+                Save
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

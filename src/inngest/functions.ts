@@ -1,72 +1,51 @@
+import prisma from "@/lib/db";
 import { inngest } from "./client";
-import { google } from "@ai-sdk/google";
-import { openai } from "@ai-sdk/openai";
-import { anthropic } from "@ai-sdk/anthropic";
-import { deepseek } from "@ai-sdk/deepseek";
-import { generateText } from "ai";
-import * as Sentry from '@sentry/nextjs'
+import { NonRetriableError } from "inngest";
+import topoSort from "toposort";
+import { TopologicalSortNodes } from "@/lib/nodes";
+import { getExecutor } from "@/config/executors";
 
-export const generateAI = inngest.createFunction(
-  { id: "generate.ai" },
-  { event: "generate/ai" },
+export const executeWorkflow = inngest.createFunction(
+  { id: "execute.workflow" },
+  { event: "workflow/execute.workflow" },
   async ({ event, step }) => {
-
-    Sentry.logger.info('Starting AI Text Generations')
-
-    // Generating Text From Gemini
-    const geminiSteps = await step.ai.wrap("gemini-ai-response", generateText, {
-      model: google("gemini-2.5-flash"),
-      prompt:
-        "Let f(x) = (x + 1)/(x - 1) what is f'(x) = ? or the Derivative of f(x)",
-      experimental_telemetry: {
-        isEnabled: true,
-        recordInputs: true,
-        recordOutputs: true,
-      },
-    });
-
-    // Generating Text From OpenAI
-    const openAiSteps = await step.ai.wrap("open-ai-response", generateText, {
-      model: openai("gpt-4"),
-      prompt:
-        "Let f(x) = (x + 1)/(x - 1) what is f'(x) = ? or the Derivative of f(x)",
-      experimental_telemetry: {
-        isEnabled: true,
-        recordInputs: true,
-        recordOutputs: true,
-      },
-    });
-
-    // Generating Text From Claude
-    const claudeAiSteps = await step.ai.wrap(
-      "claude-ai-response",
-      generateText,
-      {
-        model: anthropic("gpt-4"),
-        prompt:
-          "Let f(x) = (x + 1)/(x - 1) what is f'(x) = ? or the Derivative of f(x)",
-        experimental_telemetry: {
-          isEnabled: true,
-          recordInputs: true,
-          recordOutputs: true,
+    const sortedNodes = await step.run("prepare-nodes", async () => {
+      const workflow = await prisma.workflow.findUnique({
+        where: {
+          id: event.data.workflowId,
         },
-      },
-    );
+        include: {
+          nodes: true,
+          connections: true,
+        },
+      });
 
-    // Generating Text From DeepSeek
-    const deepAiSteps = await step.ai.wrap("deep-ai-response", generateText, {
-      model: deepseek("gpt-4"),
-      prompt:
-        "Let f(x) = (x + 1)/(x - 1) what is f'(x) = ? or the Derivative of f(x)",
-      experimental_telemetry: {
-        isEnabled: true,
-        recordInputs: true,
-        recordOutputs: true,
-      },
+      if (!workflow) {
+        throw new NonRetriableError("Workflow Not Found!");
+      }
+
+      const { nodes, connections } = workflow;
+
+      return TopologicalSortNodes(nodes, connections);
     });
 
-    return {
-      message: "Ai model queued",
-    };
+    let context = event.data.initialData|| {};
+
+    // Execution
+    for (const node of sortedNodes) {
+      const executor = getExecutor(node.type);
+
+      context = await executor({
+        context,
+        data: node.data as Record<string,unknown>,
+        nodeId: node.id,
+        step
+      })
+    }
+
+    return { 
+      workflowId:event.data.workflowId,
+      data:context
+     };
   },
 );

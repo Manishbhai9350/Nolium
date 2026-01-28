@@ -31,10 +31,7 @@ const UpgradeDialog = ({ open, setOpen }: UpgradeProps) => {
             Cancel
           </Button>
           <Button
-            onClick={async () => {
-              const res = await authClient.checkout({ slug: "pro" });
-              window.location.href = res.url;
-            }}
+            onClick={() => authClient.checkout({ slug: "pro" })}
           >
             Upgrade
           </Button>

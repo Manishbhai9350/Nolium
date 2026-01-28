@@ -1,0 +1,57 @@
+import type { NodeExecutor } from "@/config/executor.types";
+import { NonRetriableError } from "inngest";
+import ky, { type Options } from "ky";
+
+type HttpExecutorData = {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  endpoint: string;
+  body?: string;
+};
+
+export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
+  context,
+  nodeId,
+  step,
+  data,
+}) => {
+  // Pulish "loading" status to the current Node;
+
+  const result = await step.run("http-executor", async () => {
+    const method = data.method || "GET";
+    const endpoint = data.endpoint;
+    const body = data.body;
+
+    if (!endpoint) {
+      throw new NonRetriableError(
+        "HTTP Request Execution Error: No Enpoint Was Provided",
+      );
+    }
+
+    const kyOptions: Options = {
+      method,
+    };
+
+    if (["POST", "PUT", "PATCH"].includes(method)) {
+      kyOptions.body = body;
+    }
+
+    const response = await ky(endpoint, kyOptions);
+    const contentType = response.headers.get("content-type");
+    const responseData = contentType?.includes("application/json")
+      ? await response.json()
+      : await response.text();
+
+    return {
+      ...context,
+      httpResponse: {
+        data: responseData || "No Data",
+        statusText: response.statusText,
+        status: response.status,
+      },
+    };
+  });
+
+  // Pulish "success" status to the current Node;
+
+  return result;
+};

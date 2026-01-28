@@ -42,6 +42,7 @@ export const HTTPExecutionNode = memo(
     return (
       <>
         <HttpRequestDialog
+          key={nodeData.endpoint}
           initial={{
             endpoint: nodeData.endpoint || "",
             method: nodeData.method || "GET",

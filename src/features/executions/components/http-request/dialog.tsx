@@ -35,6 +35,11 @@ import { z } from "zod";
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 const HttpFormSchema = z.object({
+  variableName: z
+  .string()
+  .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/,{ message: 'Variable Name can only start with _ or character and can only contain _$ and characters' })
+  // .optional()
+  ,
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   endpoint: z
     .string()
@@ -97,6 +102,7 @@ const HttpRequestDialog = ({
     onOpenChange(false);
   };
 
+  const variableWatch = form.watch("variableName") || 'myApiCall';
   const method = form.watch("method");
   const enableBody =
     method === "POST" || method === "PUT" || method === "PATCH";
@@ -118,6 +124,27 @@ const HttpRequestDialog = ({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4 my-4"
           >
+            {/* Variable Name */}
+            <FormField
+              control={form.control}
+              name="variableName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Variable Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder={`myApiCall`}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Use <code>{variableWatch}</code> to inject data
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* METHOD */}
             <FormField
               control={form.control}

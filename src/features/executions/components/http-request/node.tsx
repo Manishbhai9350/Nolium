@@ -5,6 +5,7 @@ import { memo, useState } from "react";
 import HttpRequestDialog, { FormDataType } from "./dialog";
 
 type HTTPExecutionNodeData = {
+  variableName?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   endpoint?: string;
   body?: string;
@@ -44,6 +45,7 @@ export const HTTPExecutionNode = memo(
         <HttpRequestDialog
           key={nodeData.endpoint}
           initial={{
+            variableName: nodeData.variableName || "",
             endpoint: nodeData.endpoint || "",
             method: nodeData.method || "GET",
             body: nodeData.body || "",

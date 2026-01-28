@@ -3,6 +3,7 @@ import { NonRetriableError } from "inngest";
 import ky, { type Options } from "ky";
 
 type HttpExecutorData = {
+  variableName: string;
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   endpoint: string;
   body?: string;
@@ -26,13 +27,21 @@ export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
         "HTTP Request Execution Error: No Enpoint Was Provided",
       );
     }
+    if (!data.variableName) {
+      throw new NonRetriableError(
+        "HTTP Request Execution Error: Variable Name Provided",
+      );
+    }
 
     const kyOptions: Options = {
-      method,
+      method
     };
-
+    
     if (["POST", "PUT", "PATCH"].includes(method)) {
       kyOptions.body = body;
+      kyOptions.headers = {
+        'Content-Type':'applicaton/json'
+      }
     }
 
     const response = await ky(endpoint, kyOptions);
@@ -41,13 +50,24 @@ export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
       ? await response.json()
       : await response.text();
 
-    return {
-      ...context,
+    const responsePayload = {
       httpResponse: {
         data: responseData || "No Data",
         statusText: response.statusText,
         status: response.status,
       },
+    }
+
+    if(data.variableName) {
+      return {
+        ...context,
+        [data.variableName] : responsePayload
+      }
+    }
+
+    return {
+      ...context,
+      ...responsePayload
     };
   });
 

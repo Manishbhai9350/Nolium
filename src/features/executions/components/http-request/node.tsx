@@ -3,6 +3,9 @@ import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { GlobeIcon } from "lucide-react";
 import { memo, useState } from "react";
 import HttpRequestDialog, { FormDataType } from "./dialog";
+import { useNodeStatus } from "../../hooks/use-node";
+import { FetchHttpRealtimeToken } from "./action";
+import { HTTP_CHANNEL_NAME } from "@/inngest/channels/http-channel";
 
 type HTTPExecutionNodeData = {
   variableName?: string;
@@ -24,6 +27,13 @@ export const HTTPExecutionNode = memo(
     const description = nodeData.method
       ? `${nodeData.method}: ${nodeData.endpoint}`
       : `Not Configured`;
+
+    const { status } = useNodeStatus({
+      nodeId: props.id,
+      channel: HTTP_CHANNEL_NAME,
+      topic: 'status',
+      refreshToken: FetchHttpRealtimeToken
+    })
 
     const handleSave = (values: FormDataType) => {
       setNodes((nodes) =>
@@ -55,7 +65,7 @@ export const HTTPExecutionNode = memo(
           onOpenChange={setDialogOpen}
         />
         <BaseExecutionNode
-          status="initial"
+          status={status}
           {...props}
           title="HTTP Request"
           description={description}

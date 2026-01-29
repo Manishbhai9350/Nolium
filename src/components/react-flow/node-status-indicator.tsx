@@ -60,7 +60,7 @@ export const BorderLoadingIndicator = ({
         }
       `}
         </style>
-        <div className={cn("absolute inset-0 overflow-hidden rounded-[9px]",className)}>
+        <div className={cn("absolute inset-0 overflow-hidden rounded-[4px]",className)}>
           <div className="spinner rounded-full bg-[conic-gradient(from_0deg_at_50%_50%,rgb(42,67,233)_0deg,rgba(42,138,246,0)_360deg)]" />
         </div>
       </div>
@@ -80,7 +80,7 @@ const StatusBorder = ({
     <>
       <div
         className={cn(
-          "absolute -top-0.5 -left-0.5 h-[calc(100%+4px)] w-[calc(100%+4px)] rounded-[9px] border-2",
+          "absolute -top-0.5 -left-0.5 h-[calc(100%+4px)] w-[calc(100%+4px)] rounded-[4px] border-2",
           className,
         )}
       />

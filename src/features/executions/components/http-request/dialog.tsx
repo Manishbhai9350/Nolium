@@ -37,7 +37,8 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 const HttpFormSchema = z.object({
   variableName: z
   .string()
-  .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/,{ message: 'Variable Name can only start with _ or character and can only contain _$ and characters' })
+  .regex(/^[A-Za-z_$][A-Za-z0-9_$.{}]*$/
+    ,{ message: 'Variable Name must start with a letter, _, or $ and can only contain letters, numbers, _, $, ., and {.' })
   // .optional()
   ,
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
@@ -134,7 +135,7 @@ const HttpRequestDialog = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder={`myApiCall`}
+                      placeholder={`${variableWatch || "myApiCall"}`}
                     />
                   </FormControl>
                   <FormDescription>
@@ -182,11 +183,11 @@ const HttpRequestDialog = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="https://api.example.com/users/{{userId}}"
+                      placeholder={`https://api.example.com/users/{{${variableWatch || "myApiCall"}.httpResponse.datauserId}}`}
                     />
                   </FormControl>
                   <FormDescription>
-                    Use <code>{"{{variable}}"}</code> to inject data
+                    Use <code>{`{{${variableWatch || "myApiCall"}}}`}</code> to inject data
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -206,8 +207,8 @@ const HttpRequestDialog = ({
                         value={value || ''}
                         {...rest}
                         placeholder={`{
-                            "name": "{{httpResponse.data.name}}",
-                            "userId": "{{httpResponse.data.id}}"
+                            "name": "{{${variableWatch || "myApiCall"}.httpResponse.data.name}}",
+                            "userId": "{{${variableWatch || "myApiCall"}.httpResponse.data.id}}"
                           }`}
                         className="min-h-[150px]"
                       />

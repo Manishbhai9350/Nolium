@@ -1,3 +1,4 @@
+import { Realtime } from "@inngest/realtime";
 import type { GetStepTools, Inngest } from "inngest";
 
 export type WorkflowContext = Record<string, unknown>;
@@ -9,7 +10,7 @@ export type NodeExecutorProps<TData = Record<string, unknown>> = {
   nodeId: string;
   context: WorkflowContext;
   step: StepTools;
-  // pulish: TODO: Add Realtime Later
+  publish: Realtime.PublishFn;
 };
 
 export type NodeExecutor<TData = Record<string, unknown>> = (

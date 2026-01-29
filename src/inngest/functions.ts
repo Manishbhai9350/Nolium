@@ -1,14 +1,22 @@
 import prisma from "@/lib/db";
 import { inngest } from "./client";
 import { NonRetriableError } from "inngest";
-import topoSort from "toposort";
 import { TopologicalSortNodes } from "@/lib/nodes";
 import { getExecutor } from "@/config/executors";
+import { ManualTriggerChannel } from '@/inngest/channels/manual-trigget-channel';
+import { HttpChannel } from '@/inngest/channels/http-channel';
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "execute.workflow" },
-  { event: "workflow/execute.workflow" },
-  async ({ event, step }) => {
+  { id: "execute.workflow", retries: 0 /* TODO: Remove In Production */ },
+  { 
+    event: "workflow/execute.workflow",
+    channels: [
+      HttpChannel(),
+      ManualTriggerChannel()
+    ]
+   },
+  async ({ event, step, publish }) => {
+
     const sortedNodes = await step.run("prepare-nodes", async () => {
       const workflow = await prisma.workflow.findUnique({
         where: {
@@ -39,7 +47,8 @@ export const executeWorkflow = inngest.createFunction(
         context,
         data: node.data as Record<string,unknown>,
         nodeId: node.id,
-        step
+        step,
+        publish
       })
     }
 

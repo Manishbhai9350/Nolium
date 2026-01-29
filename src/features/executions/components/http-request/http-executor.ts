@@ -2,6 +2,7 @@ import type { NodeExecutor } from "@/config/executor.types";
 import { NonRetriableError } from "inngest";
 import ky, { type Options } from "ky";
 import HandleBars from "handlebars";
+import { HttpChannel } from "@/inngest/channels/http-channel";
 
 HandleBars.registerHelper("json", (context) => {
   const stringed = JSON.stringify(context, null, 2);
@@ -22,67 +23,84 @@ export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
   nodeId,
   step,
   data,
+  publish,
 }) => {
   // Pulish "loading" status to the current Node;
 
-  const result = await step.run("http-executor", async () => {
-    const variableName = data.variableName;
-    const method = data.method;
-    const endpoint = data.endpoint;
-    const body = data.body;
+  await publish(
+    HttpChannel().status({
+      nodeId,
+      status: "loading",
+    }),
+  );
+  try {
+    const result = await step.run("http-executor", async () => {
+      const variableName = data.variableName;
+      const method = data.method;
+      const endpoint = data.endpoint;
+      const body = data.body;
 
-    if (!endpoint) {
-      throw new NonRetriableError(
-        "HTTP Request Execution Error: No Enpoint Was Provided",
-      );
-    }
-    if (!data.variableName) {
-      throw new NonRetriableError(
-        "HTTP Request Execution Error: Variable Name Provided",
-      );
-    }
+      if (!endpoint) {
+        throw new NonRetriableError(
+          "HTTP Request Execution Error: No Enpoint Was Provided",
+        );
+      }
+      if (!data.variableName) {
+        throw new NonRetriableError(
+          "HTTP Request Execution Error: Variable Name Provided",
+        );
+      }
 
-    const kyOptions: Options = {
-      method,
-    };
-
-    if (["POST", "PUT", "PATCH"].includes(method)) {
-      // Body
-      console.log("BODY:", body);
-      const compiledBody = HandleBars.compile(body || '{}')(context);
-      JSON.parse(compiledBody);
-      console.log("Parsed Body:", compiledBody);
-
-      kyOptions.body = compiledBody;
-      kyOptions.headers = {
-        "Content-Type": "applicaton/json",
+      const kyOptions: Options = {
+        method,
       };
-    }
 
-    const parsedEndpoint = HandleBars.compile(endpoint)(context);
-    const parsedVariableName = HandleBars.compile(variableName)(context);
+      if (["POST", "PUT", "PATCH"].includes(method)) {
+        const compiledBody = HandleBars.compile(body || "{}")(context);
+        kyOptions.body = compiledBody;
+        kyOptions.headers = {
+          "Content-Type": "applicaton/json",
+        };
+      }
 
-    const response = await ky(parsedEndpoint, kyOptions)
-    const contentType = response.headers.get("content-type");
-    const responseData = contentType?.includes("application/json")
-      ? await response.json()
-      : await response.text();
+      const parsedEndpoint = HandleBars.compile(endpoint)(context);
+      const parsedVariableName = HandleBars.compile(variableName)(context);
 
-    const responsePayload = {
-      httpResponse: {
-        data: responseData || "No Data",
-        statusText: response.statusText,
-        status: response.status,
-      },
-    };
+      const response = await ky(parsedEndpoint, kyOptions);
+      const contentType = response.headers.get("content-type");
+      const responseData = contentType?.includes("application/json")
+        ? await response.json()
+        : await response.text();
 
-    return {
-      ...context,
-      [parsedVariableName]: responsePayload,
-    };
-  });
+      const responsePayload = {
+        httpResponse: {
+          data: responseData || "No Data",
+          statusText: response.statusText,
+          status: response.status,
+        },
+      };
 
-  // Pulish "success" status to the current Node;
+      return {
+        ...context,
+        [parsedVariableName]: responsePayload,
+      };
+    });
 
-  return result;
+    await publish(
+      HttpChannel().status({
+        nodeId,
+        status: "success",
+      }),
+    );
+
+    return result;
+  } catch (error) {
+    await publish(
+      HttpChannel().status({
+        nodeId,
+        status: "error",
+      }),
+    );
+    throw error;
+  }
 };

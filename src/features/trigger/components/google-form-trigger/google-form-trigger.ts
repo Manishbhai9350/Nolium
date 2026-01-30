@@ -25,7 +25,5 @@ export const GoogleFormTrigger:NodeExecutor<GoogleFormTriggerData> = async ({
             status:'success'
         })
     )
-    return {
-        googleForm:context
-    };
+    return context;
 }

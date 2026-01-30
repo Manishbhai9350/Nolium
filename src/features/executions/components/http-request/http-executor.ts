@@ -37,7 +37,7 @@ export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
     const result = await step.run("http-executor", async () => {
       if (!data.variableName) {
         throw new NonRetriableError(
-          "HTTP Request Execution Error: Variable Name Provided",
+          "HTTP Request Execution Error: No Variable Name Provided",
         );
       }
       if (!data.method) {
@@ -47,7 +47,7 @@ export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
       }
       if (!data.endpoint) {
         throw new NonRetriableError(
-          "HTTP Request Execution Error: No Enpoint Was Provided",
+          "HTTP Request Execution Error: No Endpoint Was Provided",
         );
       }
 

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       raw: body.data?.object,
     };
 
-    SendWorkflowExecution({
+    await SendWorkflowExecution({
       workflowId,
       initialData:{
         stripe:stripeData

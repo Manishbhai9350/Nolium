@@ -83,13 +83,13 @@ const StripeTriggerDialog = ({ open, onOpenChange, nodeId }: Props) => {
           <h2>Available Variables</h2>
           <ul className="list-none text-sm text-muted-foreground">
             <li>
-              <code>{"{{ stripe.amout }}"}</code> - Payment amount
+              <code>{"{{ stripe.raw.amout }}"}</code> - Payment amount
               </li>
             <li>
-              <code>{"{{ stripe.currency }}"}</code> - Currency code
+              <code>{"{{ stripe.raw.currency }}"}</code> - Currency code
             </li>
             <li>
-              <code>{"{{json stripe.customerId}}"}</code> - Customer ID
+              <code>{"{{json stripe.raw.customerId}}"}</code> - Customer ID
             </li>
             <li>
               <code>{"{{json stripe}}"}</code> - Full event data as JSON

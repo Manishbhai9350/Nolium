@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       raw: body,
     };
 
-    SendWorkflowExecution({
+    await SendWorkflowExecution({
       workflowId,
       initialData:{
         googleForm:formData

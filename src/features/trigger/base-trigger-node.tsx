@@ -56,13 +56,12 @@ export const BaseTriggerNode = memo(
         <NodeStatusIndicator status={status} className="rounded-l-full" >
           <BaseNode status={status} onDoubleClick={onDoubleClick} className="rounded-l-full">
             <BaseNodeContent>
-              {typeof Icon == "string" ? (
-                <Image src={Icon} alt={title} height={16} width={16} />
+              {typeof Icon === "string" ? (
+                <Image src={Icon} alt={''} height={20} width={20} />
               ) : (
                 <Icon className="size-4 text-muted-foreground" />
               )}
               { children }
-              
             </BaseNodeContent>
             <BaseHandle id="source-1" type="source" position={Position.Right} />
           </BaseNode>

@@ -11,16 +11,12 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import { NodeType } from "@/generated/prisma/enums";
-import {
-  GlobeIcon,
-  type LucideIcon,
-  MousePointerIcon,
-  TextCursorIcon,
-} from "lucide-react";
+import { GlobeIcon, type LucideIcon, MousePointerIcon } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useCallback } from "react";
-import { useNodes, useReactFlow } from "@xyflow/react";
+import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface AddNodeSheetProps {
   open: boolean;
@@ -32,7 +28,7 @@ interface NodeTypeOptions {
   type: NodeType;
   label: string;
   description: string;
-  icon: LucideIcon;
+  icon: LucideIcon | string;
 }
 
 const triggerNodes: NodeTypeOptions[] = [
@@ -41,6 +37,12 @@ const triggerNodes: NodeTypeOptions[] = [
     label: "Manual Trigger",
     description: "Manual trigger to start your workflow",
     icon: MousePointerIcon,
+  },
+  {
+    type: NodeType.GOOGLE_FORM_TRIGGER,
+    label: "Google Form Trigger",
+    description: "Runs the flow when google form is submitted",
+    icon: "/logos/google.svg",
   },
 ];
 
@@ -118,9 +120,20 @@ const NodeSelector = ({ children, onOpenChange, open }: AddNodeSheetProps) => {
               key={trigger.label}
               className="w-full cursor-pointer hover:bg-slate-100 hover:border-l-2 border-l-primary  flex justify-start items-center py-4"
             >
-              <div className="icon p-6">
-                <Icon />
-              </div>
+              {typeof Icon == "string" ? (
+                <div className="google-logo p-6">
+                  <Image
+                    width={23}
+                    height={23}
+                    alt={trigger.label}
+                    src={Icon}
+                  />
+                </div>
+              ) : (
+                <div className="icon p-6">
+                  <Icon />
+                </div>
+              )}
               <div className="texts flex flex-col justify-center items-start">
                 <h1 className="text-sm font-medium">{trigger.label}</h1>
                 <p className="text-sm text-muted-foreground">

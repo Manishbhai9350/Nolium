@@ -44,17 +44,7 @@ const HttpFormSchema = z.object({
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
   endpoint: z
     .string()
-    .min(1, "Endpoint is required")
-    .refine((value) => {
-      // Allow {{variables}} in URL
-      const cleaned = value.replace(/{{.*?}}/g, "test");
-      try {
-        new URL(cleaned);
-        return true;
-      } catch {
-        return false;
-      }
-    }, "Enter a valid URL"),
+    .min(1, "Endpoint is required"),
   body: z.string().optional().nullable(),
 });
 

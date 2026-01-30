@@ -93,6 +93,8 @@ export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
       }),
     );
 
+    console.log(result)
+
     return result;
   } catch (error) {
     await publish(

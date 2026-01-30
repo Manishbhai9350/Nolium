@@ -11,6 +11,7 @@ import type { Node, Edge } from "@xyflow/react";
 import { NodeType } from "@/generated/prisma/enums";
 import { TRPCError } from "@trpc/server";
 import { inngest } from "@/inngest/client";
+import { SendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowRouters = createTRPCRouter({
   create: premiumProcedure.mutation(async ({ ctx }) => {
@@ -42,12 +43,7 @@ export const workflowRouters = createTRPCRouter({
       }
     })
 
-    await inngest.send({
-      name:'workflow/execute.workflow',
-      data: {
-        workflowId: workflow.id
-      }
-    })
+    SendWorkflowExecution({ workflowId:workflow.id })
     
     return workflow;
   }),

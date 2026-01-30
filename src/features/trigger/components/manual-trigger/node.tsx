@@ -1,10 +1,9 @@
 import { Node, NodeProps } from "@xyflow/react";
-import { GlobeIcon, MousePointerIcon } from "lucide-react";
+import { MousePointerIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { BaseTriggerNode } from "../../base-trigger-node";
-import { NodeStatus } from "@/components/react-flow/node-status-indicator";
 import TriggerDialog from "./dialog";
-import { MANUAL_TRIGGER_CHANNEL_NAME } from "@/inngest/channels/manual-trigget-channel";
+import { MANUAL_TRIGGER_CHANNEL_NAME } from "@/inngest/channels/manual-trigger-channel";
 import { useNodeStatus } from "@/features/executions/hooks/use-node";
 import { FetchManualTriggerRealtimeToken } from "./action";
 

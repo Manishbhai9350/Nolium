@@ -1,6 +1,6 @@
 import { getSubscriptionToken, Realtime } from "@inngest/realtime";
 import { inngest } from "@/inngest/client";
-import { ManualTriggerChannel } from "@/inngest/channels/manual-trigget-channel";
+import { ManualTriggerChannel } from "@/inngest/channels/manual-trigger-channel";
 
 export type ManualTriggerToken = Realtime.Token<typeof ManualTriggerChannel, ["status"]>;
 

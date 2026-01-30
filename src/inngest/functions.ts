@@ -3,8 +3,9 @@ import { inngest } from "./client";
 import { NonRetriableError } from "inngest";
 import { TopologicalSortNodes } from "@/lib/nodes";
 import { getExecutor } from "@/config/executors";
-import { ManualTriggerChannel } from '@/inngest/channels/manual-trigget-channel';
+import { ManualTriggerChannel } from '@/inngest/channels/manual-trigger-channel';
 import { HttpChannel } from '@/inngest/channels/http-channel';
+import { GoogleFormTriggerChannel } from "./channels/googl-form-trigger-channel";
 
 export const executeWorkflow = inngest.createFunction(
   { id: "execute.workflow", retries: 0 /* TODO: Remove In Production */ },
@@ -12,7 +13,8 @@ export const executeWorkflow = inngest.createFunction(
     event: "workflow/execute.workflow",
     channels: [
       HttpChannel(),
-      ManualTriggerChannel()
+      ManualTriggerChannel(),
+      GoogleFormTriggerChannel()
     ]
    },
   async ({ event, step, publish }) => {

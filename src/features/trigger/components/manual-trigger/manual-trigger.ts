@@ -1,5 +1,5 @@
 import type { NodeExecutor } from '@/config/executor.types';
-import { ManualTriggerChannel } from '@/inngest/channels/manual-trigget-channel';
+import { ManualTriggerChannel } from '@/inngest/channels/manual-trigger-channel';
 
 type ManualTriggerData = Record<string,unknown>;
 

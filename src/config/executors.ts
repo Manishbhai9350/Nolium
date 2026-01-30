@@ -3,7 +3,7 @@ import { NodeExecutor } from "./executor.types";
 import { ManualTrigger } from "@/features/trigger/components/manual-trigger/manual-trigger";
 import { HttpExecutor } from "@/features/executions/components/http-request/http-executor";
 import { GoogleFormTrigger } from "@/features/trigger/components/google-form-trigger/google-form-trigger";
-import { StripeTriggerExecutor } from "@/features/trigger/components/stripe-trigger/stripe-trigger";
+import { StripeTriggerExecutor } from "@/features/trigger/components/stripe-trigger/stripe-executor";
 
 
 export const executors:Record<NodeType,NodeExecutor> = {

@@ -12,9 +12,9 @@ HandleBars.registerHelper("json", (context) => {
 });
 
 type HttpExecutorData = {
-  variableName: string;
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-  endpoint: string;
+  variableName?: string;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  endpoint?: string;
   body?: string;
 };
 
@@ -35,21 +35,27 @@ export const HttpExecutor: NodeExecutor<HttpExecutorData> = async ({
   );
   try {
     const result = await step.run("http-executor", async () => {
+      if (!data.variableName) {
+        throw new NonRetriableError(
+          "HTTP Request Execution Error: No Variable Name Provided",
+        );
+      }
+      if (!data.method) {
+        throw new NonRetriableError(
+          "HTTP Request Execution Error: No Method Was Provided",
+        );
+      }
+      if (!data.endpoint) {
+        throw new NonRetriableError(
+          "HTTP Request Execution Error: No Endpoint Was Provided",
+        );
+      }
+
       const variableName = data.variableName;
       const method = data.method;
       const endpoint = data.endpoint;
       const body = data.body;
 
-      if (!endpoint) {
-        throw new NonRetriableError(
-          "HTTP Request Execution Error: No Enpoint Was Provided",
-        );
-      }
-      if (!data.variableName) {
-        throw new NonRetriableError(
-          "HTTP Request Execution Error: Variable Name Provided",
-        );
-      }
 
       const kyOptions: Options = {
         method,

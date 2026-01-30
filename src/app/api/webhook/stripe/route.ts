@@ -6,6 +6,8 @@ export async function POST(request: NextRequest) {
     const url = new URL(request.url);
     const workflowId = url.searchParams.get("workflowId");
 
+    console.log(workflowId)
+
     if (!workflowId) {
       return NextResponse.json(
         {
@@ -20,34 +22,33 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    const formData = {
-      formId: body.formId,
-      formTitle: body.formTitle,
-      responseId: body.responseId,
-      respondentEmail: body.respondentEmail,
-      responses: body.responses,
-      raw: body,
+    const stripeData = {
+      eventId: body.id,
+      eventType: body.type,
+      timestamp: body.created,
+      livemode: body.livemode,
+      raw: body.data?.object,
     };
 
     await SendWorkflowExecution({
       workflowId,
       initialData:{
-        googleForm:formData
+        stripe:stripeData
       }
     })
 
     return NextResponse.json({
-      message:'Google Form Handled Successfully',
+      message:'Stripe Event Captured',
       success:true
     },{
       status:200
     })
   } catch (error) {
-    console.log("Google Form Submission Error: ", error);
+    console.log("Stripe Event Error: ", error);
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to process Google Form Submission",
+        message: "Failed to process Stripe Event",
       },
       {
         status: 500,

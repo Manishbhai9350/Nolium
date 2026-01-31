@@ -59,6 +59,24 @@ const executionNodes: NodeTypeOptions[] = [
     description: "Make an http request",
     icon: GlobeIcon,
   },
+  {
+    type: NodeType.GEMINI,
+    label: "Gemini",
+    description: "Give Gemini prompt and generate text.",
+    icon: "/logos/gemini.svg",
+  },
+  {
+    type: NodeType.GPT,
+    label: "GPT",
+    description: "Give Gpt prompt and generate text.",
+    icon: "/logos/openai.svg",
+  },
+  {
+    type: NodeType.ANTHROPIC,
+    label: "Anthropic (Claude)",
+    description: "Give Anthropic prompt and generate text.",
+    icon: "/logos/anthropic.svg",
+  },
 ];
 
 const NodeSelector = ({ children, onOpenChange, open }: AddNodeSheetProps) => {
@@ -118,58 +136,71 @@ const NodeSelector = ({ children, onOpenChange, open }: AddNodeSheetProps) => {
             A trigger is a step that will start your workflow.
           </SheetDescription>
         </SheetHeader>
-        {triggerNodes.map((trigger) => {
-          const { icon: Icon } = trigger;
-          return (
-            <div
-              onClick={() => HandleNodeSelect(trigger)}
-              key={trigger.label}
-              className="w-full cursor-pointer hover:bg-slate-100 hover:border-l-2 border-l-primary  flex justify-start items-center py-4"
-            >
-              {typeof Icon == "string" ? (
-                <div className="google-logo p-6">
-                  <Image
-                    width={23}
-                    height={23}
-                    alt={trigger.label}
-                    src={Icon}
-                  />
+        <div className="flex flex-col h-screen overscroll-y-scroll">
+          {triggerNodes.map((trigger) => {
+            const { icon: Icon } = trigger;
+            return (
+              <div
+                onClick={() => HandleNodeSelect(trigger)}
+                key={trigger.label}
+                className="w-full cursor-pointer hover:bg-slate-100 hover:border-l-2 border-l-primary  flex justify-start items-center py-4"
+              >
+                {typeof Icon == "string" ? (
+                  <div className="google-logo p-6">
+                    <Image
+                      width={23}
+                      height={23}
+                      alt={trigger.label.slice(0, 1)}
+                      src={Icon}
+                    />
+                  </div>
+                ) : (
+                  <div className="icon p-6">
+                    <Icon />
+                  </div>
+                )}
+                <div className="texts flex flex-col justify-center items-start">
+                  <h1 className="text-sm font-medium">{trigger.label}</h1>
+                  <p className="text-sm text-muted-foreground">
+                    {trigger.description}
+                  </p>
                 </div>
-              ) : (
-                <div className="icon p-6">
-                  <Icon />
+              </div>
+            );
+          })}
+          <Separator />
+          {executionNodes.map((trigger) => {
+            const { icon: Icon } = trigger;
+            return (
+              <div
+                onClick={() => HandleNodeSelect(trigger)}
+                key={trigger.label}
+                className="w-full cursor-pointer hover:bg-slate-100 hover:border-l-2 border-l-primary  flex justify-start items-center py-4"
+              >
+                {typeof Icon == "string" ? (
+                  <div className="google-logo p-6">
+                    <Image
+                      width={23}
+                      height={23}
+                      alt={trigger.label.slice(0, 1)}
+                      src={Icon}
+                    />
+                  </div>
+                ) : (
+                  <div className="icon p-6">
+                    <Icon />
+                  </div>
+                )}
+                <div className="texts flex flex-col justify-center items-start">
+                  <h1 className="text-sm font-medium">{trigger.label}</h1>
+                  <p className="text-sm text-muted-foreground">
+                    {trigger.description}
+                  </p>
                 </div>
-              )}
-              <div className="texts flex flex-col justify-center items-start">
-                <h1 className="text-sm font-medium">{trigger.label}</h1>
-                <p className="text-sm text-muted-foreground">
-                  {trigger.description}
-                </p>
               </div>
-            </div>
-          );
-        })}
-        <Separator />
-        {executionNodes.map((trigger) => {
-          const { icon: Icon } = trigger;
-          return (
-            <div
-              onClick={() => HandleNodeSelect(trigger)}
-              key={trigger.label}
-              className="w-full cursor-pointer hover:bg-slate-100 hover:border-l-2 border-l-primary  flex justify-start items-center py-4"
-            >
-              <div className="icon p-6">
-                <Icon />
-              </div>
-              <div className="texts flex flex-col justify-center items-start">
-                <h1 className="text-sm font-medium">{trigger.label}</h1>
-                <p className="text-sm text-muted-foreground">
-                  {trigger.description}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </SheetContent>
     </Sheet>
   );

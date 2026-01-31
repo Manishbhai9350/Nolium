@@ -79,7 +79,7 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
     });
 
     const responseText =
-      steps[0].content[0].type == "text" ? steps[0].content[0].text : "";
+      steps[0]?.content[0]?.type == "text" ? steps[0].content[0].text : "";
 
     await publish(
       OpenAiChannel().status({

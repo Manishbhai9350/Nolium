@@ -80,7 +80,7 @@ export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
     });
 
     const responseText =
-      steps[0].content[0].type == "text" ? steps[0].content[0].text : "";
+      steps[0]?.content[0]?.type == "text" ? steps[0].content[0].text : "";
 
     await publish(
       GeminiChannel().status({

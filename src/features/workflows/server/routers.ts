@@ -9,8 +9,6 @@ import z from "zod";
 import { PAGINATION } from "./constants";
 import type { Node, Edge } from "@xyflow/react";
 import { NodeType } from "@/generated/prisma/enums";
-import { TRPCError } from "@trpc/server";
-import { inngest } from "@/inngest/client";
 import { SendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowRouters = createTRPCRouter({

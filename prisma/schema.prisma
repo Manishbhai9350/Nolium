@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id            String     @id
+  id            String       @id
   name          String
-  email         String     @unique
-  emailVerified Boolean    @default(false)
+  email         String       @unique
+  emailVerified Boolean      @default(false)
   image         String?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   workflows     Workflow[]
   accounts      Account[]
   sessions      Session[]
+  credentials   Credential[]
 
   @@map("user")
 }
@@ -70,6 +71,19 @@ model Verification {
   @@map("verification")
 }
 
+model Credential {
+  id        String    @id @default(cuid())
+  name      String
+  value     String
+  type      CredentialTypes
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  userId    String
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  node      Node[] 
+}
+
 model Workflow {
   id          String       @id @default(cuid())
   name        String
@@ -93,6 +107,8 @@ model Node {
   outputConnections Connection[] @relation("FromNode")
   inputConnections  Connection[] @relation("ToNode")
   workflow          Workflow     @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  credentialId      String?
+  credential        Credential?  @relation(fields: [credentialId], references: [id])
 }
 
 model Connection {
@@ -120,4 +136,10 @@ enum NodeType {
   GEMINI
   ANTHROPIC
   GPT
+}
+
+enum CredentialTypes {
+  GPT
+  ANTHROPIC
+  GEMINI
 }

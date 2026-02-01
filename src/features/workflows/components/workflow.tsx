@@ -12,7 +12,8 @@ import {
 import UseUpdrageModel from "@/components/custom/useUpgradeModel";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useWorkflowParams } from "../hooks/useWorkflowParams";
+import { useWorkflowParams } from "../hooks/workflow-params";
+import { useSuspenseWorkflows } from "../hooks/useWorkflow";
 import useEntitySearch from "@/components/custom/entity-search";
 import {
   useCreateWorkflow,
@@ -20,7 +21,6 @@ import {
   useSaveWorkflow,
   useUpdateWorkflowName,
 } from "../hooks/useWorkflow";
-import useSuspenseWorkflows from "../hooks/useSuspenseWorkflows";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { LoaderIcon, TrashIcon, WorkflowIcon } from "lucide-react";
@@ -33,14 +33,12 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import useSuspenseWorkflow from "../hooks/useSuspenseWorkflow";
+import { useSuspenseWorkflow } from "../hooks/useWorkflow";
 import { useEffect, useState } from "react";
 import { usePrompt } from "@/hooks/use-prompt";
-import { error } from "console";
 import { cn } from "@/lib/utils";
 import { useAtomValue } from "jotai";
 import { editorAtom } from "@/features/editor/state/editor.atom";
-import { Edge } from "@xyflow/react";
 
 interface WorkflowPaginationProps {
   page: number;

@@ -32,16 +32,17 @@ import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AVAILABLE_MODELS } from "./utils";
+import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import Image from "next/image";
 
 const OpenAIFormSchema = z.object({
-  variableName: z
-    .string()
-    .regex(/^[A-Za-z_$][A-Za-z0-9_$.{}]*$/, {
-      message:
-        "Variable Name must start with a letter, _, or $ and can only contain letters, numbers, _, $, ., and {.",
-    }),
+  variableName: z.string().regex(/^[A-Za-z_$][A-Za-z0-9_$.{}]*$/, {
+    message:
+      "Variable Name must start with a letter, _, or $ and can only contain letters, numbers, _, $, ., and {.",
+  }),
   // .optional()
   // model: z.enum(AVAILABLE_MODELS),
+  credentialId: z.string(),
   systemPrompt: z.string().optional(),
   userPrompt: z
     .string()
@@ -93,6 +94,9 @@ const OpenAIDialog = ({
     onOpenChange(false);
   };
 
+  const { data: credentials, isPending: isCredentialsPending } =
+    useCredentialsByType({ type: "GPT" });
+
   const variableWatch = form.watch("variableName") || "myOpenAI";
 
   return (
@@ -104,7 +108,9 @@ const OpenAIDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Configure OpenAI </DialogTitle>
-          <DialogDescription>Open Ai AI Agent for Automated Results</DialogDescription>
+          <DialogDescription>
+            Open Ai AI Agent for Automated Results
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -159,6 +165,39 @@ const OpenAIDialog = ({
                 </FormItem>
               )}
             /> */}
+
+            <FormField
+              disabled={isCredentialsPending}
+              control={form.control}
+              name="credentialId"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Type</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full" {...field}>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {credentials && credentials.map((credential) => (
+                        <SelectItem key={credential.type} value={credential.type}>
+                          <div className="flex items-center gap-4">
+                            <Image
+                              src={'/logos/openai.svg'}
+                              width={16}
+                              height={16}
+                              alt={'openai-credential'}
+                            />
+                            {credential.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
 
             {/* System Prompt */}
             <FormField

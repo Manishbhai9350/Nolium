@@ -15,7 +15,7 @@ import {
   Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import useSuspenseWorkflow from "../workflows/hooks/useSuspenseWorkflow";
+import { useSuspenseWorkflow } from "../workflows/hooks/useWorkflow";
 import { nodeComponent } from "@/config/node-component";
 import { AddNodeButton } from "@/components/custom/add-node-button";
 import NodeSelector from "@/components/custom/add-node-sheet";

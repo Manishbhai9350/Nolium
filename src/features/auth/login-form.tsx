@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
@@ -84,7 +85,9 @@ const LoginForm = () => {
                 return (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
-                    <Input type="email" placeholder="Enter email" {...field} />
+                    <FormControl>
+                      <Input type="email" placeholder="Enter email" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 );
@@ -97,7 +100,9 @@ const LoginForm = () => {
                 return (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <Input type="password" placeholder="**********" {...field} />
+                    <FormControl>
+                      <Input type="password" placeholder="**********" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 );

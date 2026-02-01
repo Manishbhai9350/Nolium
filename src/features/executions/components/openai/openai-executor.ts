@@ -4,6 +4,7 @@ import HandleBars from "handlebars";
 import { OpenAiChannel } from "@/inngest/channels/openai-channel";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
+import prisma from "@/lib/db";
 
 HandleBars.registerHelper("json", (context) => {
   const stringed = JSON.stringify(context, null, 2);
@@ -15,6 +16,7 @@ HandleBars.registerHelper("json", (context) => {
 type OpenAiExecutorData = {
   variableName?: string;
   // model?: GoogleGenerativeAIModel;
+  credentialId?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };
@@ -41,11 +43,11 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
         "OpenAi Execution Error: No Variable Name Provided",
       );
     }
-    // if (!data.model) {
-    //   throw new NonRetriableError(
-    //     "OpenAi Execution Error: No OpenAi Model Provided",
-    //   );
-    // }
+    if (!data.credentialId) {
+      throw new NonRetriableError(
+        "OpenAi Execution Error: No OpenAi Credential Provided",
+      );
+    }
     if (!data.userPrompt) {
       throw new NonRetriableError(
         "OpenAi Execution Error: No User Prompt Provided",
@@ -61,14 +63,28 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
 
     // TODO: Fetch users api key;
 
-    const OpenAi_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    const openAiKey = await step.run("fetching-openai-key", async () => {
+      return prisma.credential.findUnique({
+        where: {
+          id: data.credentialId,
+        },
+      });
+    });
+
+    if (!openAiKey) {
+      throw new NonRetriableError(
+        "OpenAi Execution Error: No OpenAi Credential Provided",
+      );
+    }
+
+    const OpenAi_API_KEY = openAiKey.value!;
 
     const gpt = createOpenAI({
       apiKey: OpenAi_API_KEY,
     });
 
     const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
-      model: gpt(/* model ||  */"gpt-4"),
+      model: gpt(/* model ||  */ "gpt-4"),
       system: systemPrompt,
       prompt: userPrompt,
       experimental_telemetry: {
@@ -90,9 +106,9 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
 
     return {
       ...context,
-      [variableName]:{
-        openAiResponse:responseText,
-      }
+      [variableName]: {
+        openAiResponse: responseText,
+      },
     };
   } catch (error) {
     await publish(

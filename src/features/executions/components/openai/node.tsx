@@ -14,6 +14,7 @@ type OpenAINodeData = {
   model?:GoogleGenerativeAIModel;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 type OpenAINodeType = Node<OpenAINodeData>;
@@ -62,6 +63,7 @@ export const OpenAINode = memo(
             // model: nodeData.model || AVAILABLE_MODELS[0],
             systemPrompt: nodeData.systemPrompt || "",
             userPrompt: nodeData.userPrompt || "",
+            credentialId: nodeData.credentialId || ""
           }}
           onSave={handleSave}
           open={DialogOpen}

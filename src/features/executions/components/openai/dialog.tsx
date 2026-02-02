@@ -72,6 +72,7 @@ const OpenAIDialog = ({
     defaultValues: initial,
   });
 
+
   /**
    * Reset ONLY when dialog opens
    * (prevents values from disappearing while typing)
@@ -96,6 +97,15 @@ const OpenAIDialog = ({
 
   const { data: credentials, isPending: isCredentialsPending } =
     useCredentialsByType({ type: "GPT" });
+
+  // useEffect(() => {
+  //   if (credentials?.length && credentials[0]?.id) {
+  //     console.log(credentials[0]?.id)
+  //     form.setValue("credentialId", credentials[0].id);
+  //   }
+
+  //   return () => {};
+  // }, [isCredentialsPending, credentials, form]);
 
   const variableWatch = form.watch("variableName") || "myOpenAI";
 
@@ -176,23 +186,27 @@ const OpenAIDialog = ({
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full" {...field}>
-                        <SelectValue />
+                        <SelectValue placeholder='Select a credential key' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {credentials && credentials.map((credential) => (
-                        <SelectItem key={credential.type} value={credential.type}>
-                          <div className="flex items-center gap-4">
-                            <Image
-                              src={'/logos/openai.svg'}
-                              width={16}
-                              height={16}
-                              alt={'openai-credential'}
-                            />
-                            {credential.name}
-                          </div>
-                        </SelectItem>
-                      ))}
+                      {credentials &&
+                        credentials.map((credential) => (
+                          <SelectItem
+                            key={credential.id}
+                            value={credential.id}
+                          >
+                            <div className="flex items-center gap-4">
+                              <Image
+                                src={"/logos/openai.svg"}
+                                width={16}
+                                height={16}
+                                alt={"openai-credential"}
+                              />
+                              {credential.name}
+                            </div>
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </FormItem>

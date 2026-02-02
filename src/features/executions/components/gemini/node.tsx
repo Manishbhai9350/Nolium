@@ -15,6 +15,7 @@ type GeminiNodeData = {
   model?:GoogleGenerativeAIModel;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 type GeminiNodeType = Node<GeminiNodeData>;
@@ -63,6 +64,7 @@ export const GeminiNode = memo(
             // model: nodeData.model || AVAILABLE_MODELS[0],
             systemPrompt: nodeData.systemPrompt || "",
             userPrompt: nodeData.userPrompt || "",
+            credentialId: nodeData.credentialId || ""
           }}
           onSave={handleSave}
           open={DialogOpen}

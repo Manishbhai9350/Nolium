@@ -71,13 +71,13 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
       });
     });
 
-    if (!openAiKey) {
+    if (!openAiKey || !openAiKey.value) {
       throw new NonRetriableError(
         "OpenAi Execution Error: No OpenAi Credential Provided",
       );
     }
 
-    const OpenAi_API_KEY = openAiKey.value!;
+    const OpenAi_API_KEY = openAiKey.value;
 
     const gpt = createOpenAI({
       apiKey: OpenAi_API_KEY,

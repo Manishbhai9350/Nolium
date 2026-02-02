@@ -182,15 +182,15 @@ const GeminiDialog = ({
                       {credentials &&
                         credentials.map((credential) => (
                           <SelectItem
-                            key={credential.type}
-                            value={credential.type}
+                            key={credential.id}
+                            value={credential.id}
                           >
                             <div className="flex items-center gap-4">
                               <Image
-                                src={"/logos/openai.svg"}
+                                src={"/logos/gemini.svg"}
                                 width={16}
                                 height={16}
-                                alt={"openai-credential"}
+                                alt={"gemini-credential"}
                               />
                               {credential.name}
                             </div>

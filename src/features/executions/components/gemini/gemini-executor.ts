@@ -25,6 +25,7 @@ type GeminiExecutorData = {
 export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
   context,
   nodeId,
+  userId,
   step,
   data,
   publish,
@@ -49,6 +50,11 @@ export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
         "Gemini Execution Error: No Gemini Credential Provided",
       );
     }
+    if (!userId) {
+      throw new NonRetriableError(
+        "Gemini Execution Error: Invalid User",
+      );
+    }
     if (!data.userPrompt) {
       throw new NonRetriableError(
         "Gemini Execution Error: No User Prompt Provided",
@@ -68,6 +74,7 @@ export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
       return prisma.credential.findUnique({
         where: {
           id: data.credentialId,
+          userId
         },
       });
     });

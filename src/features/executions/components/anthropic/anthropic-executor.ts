@@ -5,6 +5,7 @@ import HandleBars from "handlebars";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { AnthropicChannel } from "@/inngest/channels/anthropic-channel";
+import prisma from "@/lib/db";
 
 HandleBars.registerHelper("json", (context) => {
   const stringed = JSON.stringify(context, null, 2);
@@ -18,6 +19,7 @@ type AnthropicExecutorData = {
   // model?: GoogleGenerativeAIModel;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
@@ -42,11 +44,11 @@ export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
         "Anthropic Execution Error: No Variable Name Provided",
       );
     }
-    // if (!data.model) {
-    //   throw new NonRetriableError(
-    //     "Anthropic Execution Error: No Anthropic Model Provided",
-    //   );
-    // }
+    if (!data.credentialId) {
+      throw new NonRetriableError(
+        "Anthropic Execution Error: No Anthropic Credential Provided",
+      );
+    }
     if (!data.userPrompt) {
       throw new NonRetriableError(
         "Anthropic Execution Error: No User Prompt Provided",
@@ -62,22 +64,43 @@ export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
 
     // TODO: Fetch users api key;
 
-    const ANTHROPIC_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    const anthropicApiKey = await step.run(
+      "fetching-anthropic-key",
+      async () => {
+        return prisma.credential.findUnique({
+          where: {
+            id: data.credentialId,
+          },
+        });
+      },
+    );
+
+    if (!anthropicApiKey || !anthropicApiKey.value) {
+      throw new NonRetriableError(
+        "Anthropic Execution Error: No Anthropic Credential Provided",
+      );
+    }
+
+    const ANTHROPIC_API_KEY = anthropicApiKey.value;
 
     const google = createAnthropic({
       apiKey: ANTHROPIC_API_KEY,
     });
 
-    const { steps } = await step.ai.wrap("anthropic-generate-text", generateText, {
-      model: google(/* model ||  */"claude-sonnet-4-0"),
-      system: systemPrompt,
-      prompt: userPrompt,
-      experimental_telemetry: {
-        isEnabled: true,
-        recordInputs: true,
-        recordOutputs: true,
+    const { steps } = await step.ai.wrap(
+      "anthropic-generate-text",
+      generateText,
+      {
+        model: google(/* model ||  */ "claude-sonnet-4-0"),
+        system: systemPrompt,
+        prompt: userPrompt,
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       },
-    });
+    );
 
     const responseText =
       steps[0]?.content[0]?.type == "text" ? steps[0].content[0].text : "";
@@ -91,9 +114,9 @@ export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
 
     return {
       ...context,
-      [variableName]:{
-        AnthropicResponse:responseText,
-      }
+      [variableName]: {
+        AnthropicResponse: responseText,
+      },
     };
   } catch (error) {
     await publish(

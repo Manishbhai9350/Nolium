@@ -12,6 +12,7 @@ type AnthropicNodeData = {
   // model?:GoogleGenerativeAIModel;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 type AnthropicNodeType = Node<AnthropicNodeData>;
@@ -59,6 +60,7 @@ export const AnthropicNode = memo(
             // model: nodeData.model || AVAILABLE_MODELS[0],
             systemPrompt: nodeData.systemPrompt || "",
             userPrompt: nodeData.userPrompt || "",
+            credentialId: nodeData.credentialId || ""
           }}
           onSave={handleSave}
           open={DialogOpen}

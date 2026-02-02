@@ -145,7 +145,7 @@ export const CredentialsHeader = () => {
       <EntitySearch
         value={searchValue}
         onChange={setSearch}
-        placeholder="Search Workflow"
+        placeholder="Search Credentials"
       />
     </>
   );

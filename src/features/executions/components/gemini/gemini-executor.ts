@@ -5,6 +5,7 @@ import { GeminiChannel } from "@/inngest/channels/gemini-channel";
 import { GoogleGenerativeAIModel } from "./utils";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
+import prisma from "@/lib/db";
 
 HandleBars.registerHelper("json", (context) => {
   const stringed = JSON.stringify(context, null, 2);
@@ -18,6 +19,7 @@ type GeminiExecutorData = {
   model?: GoogleGenerativeAIModel;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
@@ -42,11 +44,11 @@ export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
         "Gemini Execution Error: No Variable Name Provided",
       );
     }
-    // if (!data.model) {
-    //   throw new NonRetriableError(
-    //     "Gemini Execution Error: No Gemini Model Provided",
-    //   );
-    // }
+    if (!data.credentialId) {
+      throw new NonRetriableError(
+        "Gemini Execution Error: No Gemini Credential Provided",
+      );
+    }
     if (!data.userPrompt) {
       throw new NonRetriableError(
         "Gemini Execution Error: No User Prompt Provided",
@@ -62,14 +64,28 @@ export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
 
     // TODO: Fetch users api key;
 
-    const GEMINI_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    const geminiApiKey = await step.run("fetching-gemini-key", async () => {
+      return prisma.credential.findUnique({
+        where: {
+          id: data.credentialId,
+        },
+      });
+    });
+
+    if (!geminiApiKey || !geminiApiKey.value) {
+      throw new NonRetriableError(
+        "OpenAi Execution Error: No Gemini Credential Provided",
+      );
+    }
+
+    const GEMINI_API_KEY = geminiApiKey.value;
 
     const google = createGoogleGenerativeAI({
       apiKey: GEMINI_API_KEY,
     });
 
     const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
-      model: google(/* model ||  */"gemini-2.0-flash"),
+      model: google(/* model ||  */ "gemini-2.0-flash"),
       system: systemPrompt,
       prompt: userPrompt,
       experimental_telemetry: {
@@ -91,9 +107,9 @@ export const GeminiExecutor: NodeExecutor<GeminiExecutorData> = async ({
 
     return {
       ...context,
-      [variableName]:{
-        geminiResponse:responseText,
-      }
+      [variableName]: {
+        geminiResponse: responseText,
+      },
     };
   } catch (error) {
     await publish(

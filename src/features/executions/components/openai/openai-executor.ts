@@ -24,6 +24,7 @@ type OpenAiExecutorData = {
 export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
   context,
   nodeId,
+  userId,
   step,
   data,
   publish,
@@ -48,6 +49,11 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
         "OpenAi Execution Error: No OpenAi Credential Provided",
       );
     }
+    if (!userId) {
+      throw new NonRetriableError(
+        "OpenAi Execution Error: Invalid User",
+      );
+    }
     if (!data.userPrompt) {
       throw new NonRetriableError(
         "OpenAi Execution Error: No User Prompt Provided",
@@ -67,6 +73,7 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
       return prisma.credential.findUnique({
         where: {
           id: data.credentialId,
+          userId
         },
       });
     });

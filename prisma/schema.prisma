@@ -136,6 +136,8 @@ enum NodeType {
   GEMINI
   ANTHROPIC
   GPT
+  DISCORD
+  SLACK
 }
 
 enum CredentialTypes {

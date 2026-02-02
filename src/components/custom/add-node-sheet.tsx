@@ -77,6 +77,18 @@ const executionNodes: NodeTypeOptions[] = [
     description: "Give Anthropic prompt and generate text.",
     icon: "/logos/anthropic.svg",
   },
+  {
+    type: NodeType.DISCORD,
+    label: "Discord",
+    description: "Use Discord node for automated Discord messages",
+    icon: "/logos/discord.svg",
+  },
+  {
+    type: NodeType.SLACK,
+    label: "Slack",
+    description: "Use Slack node for automated Discord messages",
+    icon: "/logos/slack.svg",
+  },
 ];
 
 const NodeSelector = ({ children, onOpenChange, open }: AddNodeSheetProps) => {
@@ -129,14 +141,14 @@ const NodeSelector = ({ children, onOpenChange, open }: AddNodeSheetProps) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger>{children}</SheetTrigger>
-      <SheetContent>
+      <SheetContent className="h-full max-h-screen overflow-y-auto">
         <SheetHeader>
           <SheetTitle>What triggers this workflow?</SheetTitle>
           <SheetDescription>
             A trigger is a step that will start your workflow.
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col h-screen overscroll-y-scroll">
+        <div>
           {triggerNodes.map((trigger) => {
             const { icon: Icon } = trigger;
             return (

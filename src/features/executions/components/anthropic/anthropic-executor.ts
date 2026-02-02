@@ -25,6 +25,7 @@ type AnthropicExecutorData = {
 export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
   context,
   nodeId,
+  userId,
   step,
   data,
   publish,
@@ -49,6 +50,11 @@ export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
         "Anthropic Execution Error: No Anthropic Credential Provided",
       );
     }
+    if (!userId) {
+      throw new NonRetriableError(
+        "Anthropic Execution Error: Invalid User",
+      );
+    }
     if (!data.userPrompt) {
       throw new NonRetriableError(
         "Anthropic Execution Error: No User Prompt Provided",
@@ -70,6 +76,7 @@ export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
         return prisma.credential.findUnique({
           where: {
             id: data.credentialId,
+            userId
           },
         });
       },

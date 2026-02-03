@@ -72,16 +72,16 @@ model Verification {
 }
 
 model Credential {
-  id        String    @id @default(cuid())
+  id        String          @id @default(cuid())
   name      String
   value     String
   type      CredentialTypes
-  createdAt DateTime  @default(now())
+  createdAt DateTime        @default(now())
   updatedAt DateTime?
   userId    String
-  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  node      Node[] 
+  node Node[]
 }
 
 model Workflow {
@@ -90,6 +90,7 @@ model Workflow {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?
   userId      String
+  executions  Execution[]
   connections Connection[]
   nodes       Node[]
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -125,6 +126,29 @@ model Connection {
   workflow   Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
   @@unique([fromNodeId, toNodeId, fromOutput, toInput])
+}
+
+enum ExecutionStatus {
+  RUNNING
+  FAILED
+  SUCCESS
+}
+
+model Execution {
+  id             String    @id @default(cuid())
+  inngestEventId String    @unique
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  status ExecutionStatus  @default(RUNNING)
+
+  error      String? @db.Text
+  errorStack String? @db.Text
+
+  output Json?
 }
 
 enum NodeType {

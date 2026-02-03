@@ -29,7 +29,7 @@ type EntityProps = {
   disabled?: boolean;
   onNew?: () => void;
   onNewHref?: string;
-  onNewLabel: string;
+  onNewLabel?: string;
 };
 
 type EntitySearchProps = {
@@ -158,7 +158,7 @@ export const EntityEmpty = ({
   );
 };
 
-export const EntityLoading = ({ lable = 'Loading...' }: EntityLoadingProps) => {
+export const EntityLoading = ({ lable = "Loading..." }: EntityLoadingProps) => {
   return (
     <div className="h-full flex flex-col justify-center items-center">
       <LoaderIcon className="size-8 animate-spin" />
@@ -226,29 +226,31 @@ export const EntityItem = ({
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVerticalIcon />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {actions.map(({ action, icon, label, variant = "default" }) => (
-                <DropdownMenuItem
-                  key={label}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if (disabled) return;
-                    action(e);
-                  }}
-                  className="cursor-pointer"
-                  variant={variant}
-                >
-                  {icon}
-                  <span>{label}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {actions.length ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <MoreVerticalIcon />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {actions.map(({ action, icon, label, variant = "default" }) => (
+                  <DropdownMenuItem
+                    key={label}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      if (disabled) return;
+                      action(e);
+                    }}
+                    className="cursor-pointer"
+                    variant={variant}
+                  >
+                    {icon}
+                    <span>{label}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
         </CardContent>
       </Card>
     </Link>

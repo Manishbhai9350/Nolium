@@ -5,7 +5,7 @@ import { NodeStatus } from "./node-status-indicator";
 import { CheckCircleIcon, CircleXIcon,Loader2Icon, LoaderIcon } from "lucide-react";
 
 interface BaseNodeProps extends ComponentProps<"div"> {
-  status: NodeStatus;
+  status?: NodeStatus;
 }
 
 export function BaseNode({ className, status = 'initial', children ,...props }: BaseNodeProps) {

@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators:false,
+  // typescrip`t: {
+  //   ignoreBuildErrors: true,
+  // },`
   async redirects() {
     return [
       {

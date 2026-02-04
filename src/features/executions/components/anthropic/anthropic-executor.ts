@@ -6,6 +6,7 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { AnthropicChannel } from "@/inngest/channels/anthropic-channel";
 import prisma from "@/lib/db";
+import { dcrypt } from "@/lib/encryption";
 
 HandleBars.registerHelper("json", (context) => {
   const stringed = JSON.stringify(context, null, 2);
@@ -88,7 +89,7 @@ export const AnthropicExecutor: NodeExecutor<AnthropicExecutorData> = async ({
       );
     }
 
-    const ANTHROPIC_API_KEY = anthropicApiKey.value;
+    const ANTHROPIC_API_KEY = dcrypt(anthropicApiKey.value);
 
     const google = createAnthropic({
       apiKey: ANTHROPIC_API_KEY,

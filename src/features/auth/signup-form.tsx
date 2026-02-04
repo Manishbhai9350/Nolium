@@ -75,6 +75,33 @@ const SignupForm = () => {
     );
   };
 
+  
+    const signInGoogle = async () => {
+      const data = await authClient.signIn.social({
+        provider: "google",
+      },{
+        onSuccess(){
+          router.push('/')
+        },
+        onError(){
+          toast.error('Failed to Login with Github')
+        }
+      });
+    };
+  
+    const signInGithub = async () => {
+      const data = await authClient.signIn.social({
+          provider: "github"
+      },{
+        onSuccess(){
+          router.push('/')
+        },
+        onError(){
+          toast.error('Failed to Login with Github')
+        }
+      })
+  }
+
   const isPending = form.formState.isSubmitting;
 
   return (
@@ -175,6 +202,7 @@ const SignupForm = () => {
         </div>
 
         <Button
+          onClick={signInGoogle}
           disabled={isPending}
           variant="outline"
           className="cursor-pointer flex relative"
@@ -183,6 +211,7 @@ const SignupForm = () => {
           Continue with Google
         </Button>
         <Button
+          onClick={signInGithub}
           disabled={isPending}
           variant="outline"
           className="cursor-pointer flex relative"

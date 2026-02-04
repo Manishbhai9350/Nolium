@@ -171,7 +171,7 @@ const GeminiDialog = ({
               name="credentialId"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>Api Key</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-full" {...field}>

@@ -5,6 +5,7 @@ import { OpenAiChannel } from "@/inngest/channels/openai-channel";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import prisma from "@/lib/db";
+import { dcrypt } from "@/lib/encryption";
 
 HandleBars.registerHelper("json", (context) => {
   const stringed = JSON.stringify(context, null, 2);
@@ -84,7 +85,7 @@ export const OpenAiExecutor: NodeExecutor<OpenAiExecutorData> = async ({
       );
     }
 
-    const OpenAi_API_KEY = openAiKey.value;
+    const OpenAi_API_KEY = dcrypt(openAiKey.value);
 
     const gpt = createOpenAI({
       apiKey: OpenAi_API_KEY,

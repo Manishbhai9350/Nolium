@@ -16,10 +16,9 @@ import { ExecutionStatus } from "@/generated/prisma/enums";
 export const executeWorkflow = inngest.createFunction(
   { 
     id: "execute.workflow",
-    retries: 0, /* TODO: Remove In Production */
+    retries: process.env.NODE_ENV == 'production' ? 3 : 0,
     async onFailure({ event }) {
       // Updating Execution 
-      console.log({event})
     await prisma.execution.update({
       where: {
         inngestEventId: event.data.event.id,

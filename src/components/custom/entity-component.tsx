@@ -94,13 +94,13 @@ export const EntityComponent = ({
         </p>
       </div>
       {onNew && !onNewHref && (
-        <Button disabled={disabled} onClick={onNew}>
+        <Button type="button" disabled={disabled} onClick={onNew}>
           <PlusIcon className="size-4" />
           {onNewLabel}
         </Button>
       )}
       {onNewHref && !onNew && (
-        <Button asChild>
+        <Button type="button" asChild>
           <Link href={onNewHref}>
             <PlusIcon className="size-4" />
             {onNewLabel}
@@ -147,7 +147,7 @@ export const EntityEmpty = ({
         <EmptyContent>
           <p>{message ?? "No items here"}</p>
           {onNew && (
-            <Button disabled={disabled} onClick={onNew}>
+            <Button type="button" disabled={disabled} onClick={onNew}>
               <PlusIcon />
               {onNewLabel}
             </Button>

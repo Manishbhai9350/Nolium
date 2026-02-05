@@ -202,6 +202,7 @@ const SignupForm = () => {
         </div>
 
         <Button
+          type="button"
           onClick={signInGoogle}
           disabled={isPending}
           variant="outline"
@@ -211,6 +212,7 @@ const SignupForm = () => {
           Continue with Google
         </Button>
         <Button
+          type="button"
           onClick={signInGithub}
           disabled={isPending}
           variant="outline"

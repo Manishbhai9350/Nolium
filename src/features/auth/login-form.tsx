@@ -160,6 +160,7 @@ const LoginForm = () => {
         </div>
 
         <Button
+          type="button"
           onClick={signInGoogle}
           disabled={isPending}
           variant="outline"
@@ -169,6 +170,7 @@ const LoginForm = () => {
           Continue with Google
         </Button>
         <Button
+          type="button"
           onClick={signInGithub}
           disabled={isPending}
           variant="outline"

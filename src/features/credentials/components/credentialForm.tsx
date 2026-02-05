@@ -194,10 +194,10 @@ const CredentialForm = ({ initialData }: Props) => {
             />
 
             <div className="flex items-center gap-2">
-              <Button disabled={create.isPending || update.isPending} className="flex-1">
+              <Button type="button" disabled={create.isPending || update.isPending} className="flex-1">
                 {isUpdate ? "Update" : "Create"}
               </Button>
-              <Button className="flex-1" variant="outline">
+              <Button type="button" className="flex-1" variant="outline">
                 Cancel
               </Button>
             </div>

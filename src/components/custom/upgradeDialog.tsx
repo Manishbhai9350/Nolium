@@ -27,7 +27,7 @@ const UpgradeDialog = ({ open, setOpen }: UpgradeProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button onClick={() => setOpen(false)} variant="outline">
+          <Button type="button" onClick={() => setOpen(false)} variant="outline">
             Cancel
           </Button>
           <Button

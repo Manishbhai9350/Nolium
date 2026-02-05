@@ -4,7 +4,7 @@ import { memo } from "react";
 
 export const AddNodeButton = memo(({ onClick }:{onClick:() => void}) => {
   return (
-    <Button onClick={onClick} variant="outline" size="icon" className="bg-background">
+    <Button type="button" onClick={onClick} variant="outline" size="icon" className="bg-background">
       <PlusIcon className="size-4" />
     </Button>
   );

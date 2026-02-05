@@ -25,10 +25,10 @@ const WorkflowNode = ({
       {showToolbar && (
         <NodeToolbar>
           <div className="flex justify-center items-center gap-2">
-            <Button size="sm" variant="ghost" onClick={onSettings}>
+            <Button type="button" size="sm" variant="ghost" onClick={onSettings}>
               <SettingsIcon className="size-4" />
             </Button>
-            <Button size="sm" variant="ghost" onClick={onDelete}>
+            <Button type="button" size="sm" variant="ghost" onClick={onDelete}>
               <TrashIcon className="size-4" />
             </Button>
           </div>

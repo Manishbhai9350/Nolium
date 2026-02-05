@@ -118,7 +118,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
               </div>
               <Collapsible open={stackOpen} onOpenChange={setStackOpen}>
                 <CollapsibleTrigger asChild>
-                  <Button variant="destructive">
+                  <Button type="button" variant="destructive">
                     {stackOpen ? "Hide Error Trace" : "Open Error Trace"}
                   </Button>
                 </CollapsibleTrigger>

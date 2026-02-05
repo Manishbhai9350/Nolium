@@ -15,7 +15,7 @@ const ManualExecutionWorkflowButton = ({ workflowId }: Props) => {
   };
 
   return (
-    <Button disabled={execute.isPending} onClick={() => handleExecute()}>
+    <Button type="button" disabled={execute.isPending} onClick={() => handleExecute()}>
       <FlaskConicalIcon />
       Execute Workflow
     </Button>

@@ -183,6 +183,7 @@ export const CredentialPagination = ({
       </p>
       <div className="pagination-buttons flex gap-6">
         <Button
+          type="button"
           variant="outline"
           disabled={disabled || !hasPrevPage}
           onClick={onPrevious}
@@ -190,6 +191,7 @@ export const CredentialPagination = ({
           Previous
         </Button>
         <Button
+          type="button"
           variant="outline"
           disabled={disabled || !hasNextpage}
           onClick={onNext}

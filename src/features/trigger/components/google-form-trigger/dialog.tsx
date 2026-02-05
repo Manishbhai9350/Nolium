@@ -27,8 +27,8 @@ interface Props {
 const GoogleFormTriggerDialog = ({ open, onOpenChange, nodeId }: Props) => {
   const pathname = usePathname();
   const { workflowId }: { workflowId: string } = useParams();
-
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_APP_URL || "http://localhost:3000";
+  console.log(process.env.NEXT_PUBLIC_BASE_APP_URL)
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_APP_URL ;
   const webhookUrl = `${baseUrl}/api/webhook/google-form?workflowId=${workflowId}`;
 
   const handleCopy = async (v:string,slug: string) => {

@@ -26,7 +26,7 @@ const StripeTriggerDialog = ({ open, onOpenChange, nodeId }: Props) => {
   const pathname = usePathname();
   const { workflowId }: { workflowId: string } = useParams();
 
-  const baseUrl = process.env.NEXT_BASE_APP_URL || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_APP_URL || "http://localhost:3000";
   const webhookUrl = `${baseUrl}/api/webhook/stripe?workflowId=${workflowId}`;
 
   const handleCopy = async (v:string,slug: string) => {
